@@ -5,6 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+
+/**
+ * @author John
+ *
+ * Currently unused, potential for expansion here.
+ */
 public class GraphicReader {
 
 	public static void main(String[] args) {

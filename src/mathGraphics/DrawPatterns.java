@@ -531,6 +531,9 @@ public class DrawPatterns {
 			break;
 		}
 	}
+	// Currently unused, now using chaosPolygon(), previously chaosPentagon()
+	@SuppressWarnings("unused")
+	@Deprecated
 	public void chaosHexagon(int style, int iterations) {
 		
 		int numSides = 6;
