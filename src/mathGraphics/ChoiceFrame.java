@@ -2,16 +2,22 @@ package mathGraphics;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 //import com.sun.glass.ui.InvokeLaterDispatcher;
 
@@ -48,7 +54,7 @@ public class ChoiceFrame {
 	 */
 	private JPanel buttonPanel = new JPanel();
 	
-	
+	private DrawFrame drawFrame;
 	/** 
 	 */
 	public ChoiceFrame() {
@@ -93,7 +99,7 @@ public class ChoiceFrame {
 				mainFrame.pack();
 			}
 		});
-		buttonPanel.setLayout(new BoxLayout(buttonPanel , BoxLayout.PAGE_AXIS));
+		buttonPanel.setLayout(new BoxLayout(buttonPanel , BoxLayout.X_AXIS));
 		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		JButton drawButton = new JButton("Draw");
 		buttonPanel.add(drawButton);
@@ -105,14 +111,14 @@ public class ChoiceFrame {
 				
 				try {
 					if(((OptionPanel) choiceBox.getSelectedItem()).getArgs() != null) {
-						DrawFrame df = new DrawFrame(	
+						drawFrame = new DrawFrame(	
 								choiceBox.getSelectedIndex(),							//The Selected drawing
 								((OptionPanel) choiceBox.getSelectedItem()).getArgs(),  //Relevant Arguments for selected Drawing
 								choiceBox.getSelectedItem().toString());				//Arguments for the selected drawing
 						
-						Thread t = new Thread() { //TODO why doesn't this work sometimes? Is it because java.awt.swing isn't thread-safe? For the moment, it works fine... needs more testing.
+						Thread t = new Thread() { //TODO why doesn't this work sometimes? Is it because java.awt.swing isn't thread-safe? For the moment it works fine... needs more testing.
 							public void run() {
-								df.draw();
+								drawFrame.draw();
 							}
 						};
 						t.start();
@@ -124,6 +130,33 @@ public class ChoiceFrame {
 					e2.printStackTrace();
 				}
 				
+			}
+		});
+		JButton saveButton = new JButton("Save");
+		buttonPanel.add(saveButton);
+		saveButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				Dimension d = drawFrame.getSize();
+				BufferedImage image = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g2d = image.createGraphics();
+				drawFrame.print(g2d);
+				
+				JFrame parentFrame = new JFrame();
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setFileFilter(new FileNameExtensionFilter("PNG and JPG Images", "png", "jpg"));
+				fileChooser.setDialogTitle("Saved Image Location");
+				int userSelection = fileChooser.showSaveDialog(parentFrame);
+				if(userSelection == JFileChooser.APPROVE_OPTION) {
+					try {
+						ImageIO.write(image, "png", fileChooser.getSelectedFile());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} 
+				}				
 			}
 		});
 		
