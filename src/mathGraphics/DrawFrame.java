@@ -48,13 +48,13 @@ public class DrawFrame extends JFrame{
 		grid.setVisible(true);
 		setVisible(true); //TODO Fiddle with placement of this.
 		setAlwaysOnTop(true);  //Bring to the front, as .toFront() doesn't always work
-//		setAlwaysOnTop(false);
+		setAlwaysOnTop(false);
 //		requestFocus();
 		addFocusListener(new FocusListener() { 
 			
 			@Override
 			public void focusLost(FocusEvent e) { // Closes the design window when focus is lost. This is done to avoid having a billion design windows in the background.
-				dispose();
+//				dispose();
 			}
 			
 			@Override
