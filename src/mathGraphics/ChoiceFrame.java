@@ -129,7 +129,6 @@ public class ChoiceFrame {
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
-				
 			}
 		});
 		JButton saveButton = new JButton("Save");
@@ -153,7 +152,6 @@ public class ChoiceFrame {
 					try {
 						ImageIO.write(image, "png", fileChooser.getSelectedFile());
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} 
 				}				
