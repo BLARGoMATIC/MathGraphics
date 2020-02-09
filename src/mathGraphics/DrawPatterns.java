@@ -561,7 +561,7 @@ public class DrawPatterns {
 		pencil.y = rand.nextInt((3*grid.numVerticalLEDs/5)+1) + (1*grid.numVerticalLEDs/5);
 	}
 
-	/** Method for determining which side of a line a point is.
+	/** Method for determining which side of a line a point is. Useful for finding a point within a shape.
 	 * @param a First coordinate of the line
 	 * @param b Second Coordinate of the line
 	 * @param pencil The point in question
