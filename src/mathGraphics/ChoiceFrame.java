@@ -108,7 +108,7 @@ public class ChoiceFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				if (drawFrame != null) drawFrame.dispose();
 				try {
 					if(((OptionPanel) choiceBox.getSelectedItem()).getArgs() != null) {
 						drawFrame = new DrawFrame(	
