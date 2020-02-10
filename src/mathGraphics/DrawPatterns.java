@@ -3,7 +3,7 @@ package mathGraphics;
 import java.awt.Color;
 import java.security.SecureRandom;
 
-public class DrawPatterns {
+public class DrawPatterns { //TODO clean up methods, it's kind of messy at the moment.
 
 	LEDGrid grid;
 	SecureRandom rand = new SecureRandom();
@@ -283,6 +283,7 @@ public class DrawPatterns {
 	/**This method draws you a Sierpinski Triangle, using the Chaos game
 	 * 
 	 */
+	@Deprecated
 	public void chaosTriangle(int iterations) {
 		Coordinates a = new Coordinates(250, 103, Color.BLUE);
 		Coordinates b = new Coordinates(100, 333, Color.RED);
@@ -328,208 +329,233 @@ public class DrawPatterns {
 	}
 
 	
-	public void chaosPolygon(int style, int iterations, int numSides) {
+	/** Formerly ChaosPentagon(), now ChaosPolygon, I figured out how to generalize the chaos game and vertex choice restrictions.
+	 * @param iterations Number of dots to draw in the chaos game
+	 * @param numSides Number n of sides for the n-gon to draw. ex. 3 is a triangle, 4 is a square, etc.
+	 * @param restrictions
+	 */
+	public void chaosPolygon(int iterations, int numSides, VertexRestrictions[] restrictions) {
 		Coordinates[] vertex = new Coordinates[numSides];
 		
 		//		*************** Math for a regular pentagon ******************
+		//Adjusting the rotational offset of the polygon so it's symmetrical along the vertical axis
 		double i = -Math.PI/(numSides);
 		if (numSides % 2 != 0) {
 			i = -Math.PI/(2*numSides);
-			System.out.println("odd");
-			System.out.println(Integer.toString(numSides));
-		}
+		}//Even sided polygons are already symmetrical, so there's no need to rotate them.
 		else {
 			i = 0;
-			System.out.println("even");
-			System.out.println(Integer.toString(numSides));
 		}
 		for(int k = 0; k < vertex.length; k++) {
-			vertex[k] = new Coordinates((int)Math.rint((2*grid.numHorizontalLEDs/numSides)*Math.cos(i))+grid.numHorizontalLEDs/2, 
-										(int)Math.rint((2*grid.numVerticalLEDs/numSides)*Math.sin(i))+grid.numVerticalLEDs/2);
+			vertex[k] = new Coordinates((int)Math.rint(((2 * numSides / 5)*grid.numHorizontalLEDs/numSides)*Math.cos(i))+grid.numHorizontalLEDs/(2), 
+										(int)Math.rint(((2* numSides / 5)*grid.numVerticalLEDs/numSides)*Math.sin(i))+grid.numVerticalLEDs/(2));
 			i += 2*Math.PI/numSides;
 		}
 		
-		//drawing the pentagon
+		//drawing the polygon
 		for (int k = 0; k <= (numSides-1); ++k) {
 			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
 		}
 		
 		Coordinates pencil = new Coordinates(grid.numHorizontalLEDs/2, grid.numHorizontalLEDs/2);
-		Coordinates vert = vertex[0]; //to be initialized later
+		Coordinates chosenVert = vertex[0]; //once a vertex has been chosen, it's set here.
 		int vertexBuffer = 0; //Buffer for Chaos restrictions
 		int vertexBuffer2 = 0;
 
 		//Selecting a random point
 			pencil.x = rand.nextInt((3*grid.numHorizontalLEDs/numSides)+1) + (1*grid.numHorizontalLEDs/numSides);
 			pencil.y = rand.nextInt((3*grid.numVerticalLEDs/numSides)+1) + (1*grid.numVerticalLEDs/numSides);
-
-		// Selection of fractal style.
-		if(iterations <= 0) iterations = 100000;
-		switch(style) {
-		case 1 :
+			
 			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
 				int vertIndex;
-				do {	//Selecting a random vertex
+				do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
 					vertIndex = rand.nextInt(numSides);
-				} while (vertIndex == vertexBuffer); //Method 1, chosen vertex cannot be previous vertex.
+				} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) | !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
 
-				vert = vertex[vertIndex];
+				chosenVert = vertex[vertIndex];
 
 				vertexBuffer2 = vertexBuffer;
 				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
 
 				//moving halfway to that vertex
-				pencil.x = (vert.x + pencil.x)/2;
-				pencil.y = (vert.y + pencil.y)/2;
+				pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
+				pencil.y = (chosenVert.y + pencil.y)/2;
 
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
-
-				//Placing a point at current location
+				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
+																	//TODO Make a color gradient for the number of times that a point is landed on.
+				//Placing a point at that location
 				addPoint(pencil);
-				grid.repaint();
+				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
 			}
-			break;
-		case 2 :
-			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
-				int vertIndex;
-				do {	//Selecting a random vertex
-					vertIndex = rand.nextInt(numSides);
-
-				} while (
-			 //					 vertIndex == vertexBuffer || //include or exclude for differing behavior
-								(vertIndex == ((vertexBuffer  + 1) % numSides) |
-								 vertIndex == ((vertexBuffer  + 4) % numSides) )&(
-								 vertIndex == ((vertexBuffer2 + 1) % numSides) |
-								 vertIndex == ((vertexBuffer2 + 4) % numSides) )); //Method 2, chosen vertex cannot be adjacent to previous 2 vertices
-								 vert = vertex[vertIndex];
-
-				vertexBuffer2 = vertexBuffer;
-				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
-
-				//moving halfway to that vertex
-				pencil.x = (vert.x + pencil.x)/2;
-				pencil.y = (vert.y + pencil.y)/2;
-
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
-
-				//Placing a point at current location
-				addPoint(pencil);
-				grid.repaint();
-			}
-			break;
-		case 3:
-			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
-
-				int vertIndex;
-				do {	//Selecting a random vertex
-					vertIndex = rand.nextInt(numSides);
-
-				} while (
-								 vertIndex == vertexBuffer || //include or exclude for differing behavior
-								(vertIndex == ((vertexBuffer  + 1) % numSides) |
-								 vertIndex == ((vertexBuffer  + (numSides - 1)) % numSides) )&(
-								 vertIndex == ((vertexBuffer2 + 1) % numSides) |
-								 vertIndex == ((vertexBuffer2 + (numSides - 1)) % numSides) )); //Method 3, chosen vertex cannot be or adjacent to previous 2 vertices
-								 vert = vertex[vertIndex];
-
-				vertexBuffer2 = vertexBuffer;
-				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
-
-				//moving halfway to that vertex
-				pencil.x = (vert.x + pencil.x)/2;
-				pencil.y = (vert.y + pencil.y)/2;
-
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
-
-				//Placing a point at current location
-				addPoint(pencil);
-				grid.repaint();
-			}
-			break;
-		case 4:
-			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
-
-				int vertIndex;
-				do {	//Selecting a random vertex
-					vertIndex = rand.nextInt(numSides);
-
-				} while (
-							vertIndex == vertexBuffer ||
-									(vertIndex == ((vertexBuffer  + 2) % numSides) |
-									 vertIndex == ((vertexBuffer  + (numSides - 2)) % numSides) )&(
-									 vertIndex == ((vertexBuffer2 + 2) % numSides) |
-									 vertIndex == ((vertexBuffer2 + (numSides - 2)) % numSides) )); //Method 4, chosen vertex must be adjacent to previous 2 vertices
-								 vert = vertex[vertIndex];
-
-				vertexBuffer2 = vertexBuffer;
-				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
-
-				//moving halfway to that vertex
-				pencil.x = (vert.x + pencil.x)/2;
-				pencil.y = (vert.y + pencil.y)/2;
-
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
-
-				//Placing a point at current location
-				addPoint(pencil);
-				grid.repaint();
-			}
-			break;
-		case 5:
-			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
-
-				int vertIndex;
-				do {	//Selecting a random vertex
-					vertIndex = rand.nextInt(numSides);
-
-				} while (
+		// ***************************** Old Vertex Restrictions *****************************************
+//		if(iterations <= 0) iterations = 100000;
+//		switch(style) {
+//		case 1 :
+//			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+//
+//				int vertIndex;
+//				do {	//Selecting a random vertex
+//					vertIndex = rand.nextInt(numSides);
+//				} while (vertIndex == vertexBuffer); //Method 1, chosen vertex cannot be previous vertex.
+//
+//				chosenVert = vertex[vertIndex];
+//
+//				vertexBuffer2 = vertexBuffer;
+//				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+//
+//				//moving halfway to that vertex
+//				pencil.x = (chosenVert.x + pencil.x)/2;
+//				pencil.y = (chosenVert.y + pencil.y)/2;
+//
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+//
+//				//Placing a point at current location
+//				addPoint(pencil);
+//				grid.repaint();
+//			}
+//			break;
+//		case 2 :
+//			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+//
+//				int vertIndex;
+//				do {	//Selecting a random vertex
+//					vertIndex = rand.nextInt(numSides);
+//
+//				} while (
+//			 //					 vertIndex == vertexBuffer || //include or exclude for differing behavior
+//								(vertIndex == ((vertexBuffer  + 1) % numSides) |
+//								 vertIndex == ((vertexBuffer  + (numSides - 1)) % numSides) )&(
+//								 vertIndex == ((vertexBuffer2 + 1) % numSides) |
+//								 vertIndex == ((vertexBuffer2 + (numSides - 1)) % numSides) )); //Method 2, chosen vertex cannot be adjacent to previous 2 vertices
+//								 chosenVert = vertex[vertIndex];
+//
+//				vertexBuffer2 = vertexBuffer;
+//				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+//
+//				//moving halfway to that vertex
+//				pencil.x = (chosenVert.x + pencil.x)/2;
+//				pencil.y = (chosenVert.y + pencil.y)/2;
+//
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+//
+//				//Placing a point at current location
+//				addPoint(pencil);
+//				grid.repaint();
+//			}
+//			break;
+//		case 3:
+//			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+//
+//				int vertIndex;
+//				do {	//Selecting a random vertex
+//					vertIndex = rand.nextInt(numSides);
+//
+//				} while (
+//								 vertIndex == vertexBuffer || //include or exclude for differing behavior
+//								(vertIndex == ((vertexBuffer  + 1) % numSides) |
+//								 vertIndex == ((vertexBuffer  + (numSides - 1)) % numSides) )&(
+//								 vertIndex == ((vertexBuffer2 + 1) % numSides) |
+//								 vertIndex == ((vertexBuffer2 + (numSides - 1)) % numSides) )); //Method 3, chosen vertex cannot be or adjacent to previous 2 vertices
+//								 chosenVert = vertex[vertIndex];
+//
+//				vertexBuffer2 = vertexBuffer;
+//				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+//
+//				//moving halfway to that vertex
+//				pencil.x = (chosenVert.x + pencil.x)/2;
+//				pencil.y = (chosenVert.y + pencil.y)/2;
+//
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+//
+//				//Placing a point at current location
+//				addPoint(pencil);
+//				grid.repaint();
+//			}
+//			break;
+//		case 4:
+//			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+//
+//				int vertIndex;
+//				do {	//Selecting a random vertex
+//					vertIndex = rand.nextInt(numSides);
+//
+//				} while (
 //							vertIndex == vertexBuffer ||
-//									(vertIndex == ((vertexBuffer  + 1) % 5) |
-									 vertIndex == ((vertexBuffer  + 4) % numSides) ); //Method 5, chosen vertex must be adjacent to previous vertex
-								 	vert = vertex[vertIndex];
-
-				vertexBuffer2 = vertexBuffer;
-				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
-
-				//moving halfway to that vertex
-				pencil.x = (vert.x + pencil.x)/2;
-				pencil.y = (vert.y + pencil.y)/2;
-
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
-
-				//Placing a point at current location
-				addPoint(pencil);
-				grid.repaint();
-			}
-			break;
-		default:
-			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
-
-				int vertIndex;
-				do {	//Selecting a random vertex
-					vertIndex = rand.nextInt(numSides);
-
-				} while (vertIndex == vertexBuffer); //Method 1, chosen vertex cannot be previous vertex.
-
-				vert = vertex[vertIndex];
-
-				vertexBuffer2 = vertexBuffer;
-				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
-
-				//moving halfway to that vertex
-				pencil.x = (vert.x + pencil.x)/2;
-				pencil.y = (vert.y + pencil.y)/2;
-
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
-
-				//Placing a point at current location
-				addPoint(pencil);
-				grid.repaint();
-			}
-			break;
-		}
+//									(vertIndex == ((vertexBuffer  + 2) % numSides) |
+//									 vertIndex == ((vertexBuffer  + (numSides - 2)) % numSides) )&(
+//									 vertIndex == ((vertexBuffer2 + 2) % numSides) |
+//									 vertIndex == ((vertexBuffer2 + (numSides - 2)) % numSides) )); //Method 4, chosen vertex must be adjacent to previous 2 vertices
+//								 chosenVert = vertex[vertIndex];
+//
+//				vertexBuffer2 = vertexBuffer;
+//				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+//
+//				//moving halfway to that vertex
+//				pencil.x = (chosenVert.x + pencil.x)/2;
+//				pencil.y = (chosenVert.y + pencil.y)/2;
+//
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+//
+//				//Placing a point at current location
+//				addPoint(pencil);
+//				grid.repaint();
+//			}
+//			break;
+//		case 5:
+//			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+//
+//				int vertIndex;
+//				do {	//Selecting a random vertex
+//					vertIndex = rand.nextInt(numSides);
+//
+//				} while (
+////							vertIndex == vertexBuffer ||
+////									(vertIndex == ((vertexBuffer  + 1) % 5) | //TODO Add Modulus Parameter
+//									 vertIndex == ((vertexBuffer  + (numSides-1)) % numSides) ); //Method 5, chosen vertex must be adjacent to previous vertex
+//								 	chosenVert = vertex[vertIndex];
+//
+//				vertexBuffer2 = vertexBuffer;
+//				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+//
+//				//moving halfway to that vertex
+//				pencil.x = (chosenVert.x + pencil.x)/2;
+//				pencil.y = (chosenVert.y + pencil.y)/2;
+//
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+//
+//				//Placing a point at current location
+//				addPoint(pencil);
+//				grid.repaint();
+//			}
+//			break;
+//		default:
+//			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+//
+//				int vertIndex;
+//				do {	//Selecting a random vertex
+//					vertIndex = rand.nextInt(numSides);
+//
+//				} while (vertIndex == vertexBuffer); //Method 1, chosen vertex cannot be previous vertex.
+//
+//				chosenVert = vertex[vertIndex];
+//
+//				vertexBuffer2 = vertexBuffer;
+//				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+//
+//				//moving halfway to that vertex
+//				pencil.x = (chosenVert.x + pencil.x)/2;
+//				pencil.y = (chosenVert.y + pencil.y)/2;
+//
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+//
+//				//Placing a point at current location
+//				addPoint(pencil);
+//				grid.repaint();
+//			}
+//			break;
+//		}
 	}
 	// Currently unused, now using chaosPolygon(), previously chaosPentagon()
 	@SuppressWarnings("unused")
@@ -560,7 +586,47 @@ public class DrawPatterns {
 		pencil.x = rand.nextInt((3*grid.numHorizontalLEDs/5)+1) + (1*grid.numHorizontalLEDs/5);
 		pencil.y = rand.nextInt((3*grid.numVerticalLEDs/5)+1) + (1*grid.numVerticalLEDs/5);
 	}
-
+	/** Returns true if the supplied vertex passes all tests supplied by the supplied VertexRestrictions, returns false otherwise.
+	 * @param vertex0 The Current Vertex (index) that must be checked against the chosen vertex restrictions
+	 * @param vertex1 The Previous Vertex (index) or the vertex to check against vertex0 (The Vertex Buffer)
+	 * @param numSides number of Sides of the current polygon, for use in modulus functions for adjacency and offset
+	 * @param restrictions A collection of restrictions for determining the rules for selecting a new vertex.
+	 */
+	public boolean vertexValidation(int vertex0, int vertex1, int numSides, VertexRestrictions restrictions) { //TODO rework, it's ugly
+		if (restrictions.isEquivalencePreference()) { //
+			if (restrictions.isEquivalenceTrue()) {
+				if(vertex0 != vertex1) return false; 	//Current vertex (vertex0) Must be equivalent to previous vertex (vertex1)
+			}
+			if (!restrictions.isEquivalenceTrue()) {
+				if(vertex0 == vertex1) return false; 	//Must not be equivalent
+			}
+		}
+		if (restrictions.isAdjacentPreference()) {
+			if (restrictions.isAdjacentTrue()) {
+				if(((vertex1 + 1)%numSides != vertex0)&((vertex1 - 1)%numSides != vertex0)) return false; //Must be Adjacent
+			}
+			if (!restrictions.isAdjacentTrue()) {
+				if(((vertex1 + 1)%numSides == vertex0)&((vertex1 - 1)%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
+			}
+		}
+		if (restrictions.isOffset1Preference()) {
+			if (restrictions.isOffset1True()) {
+				if((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) return false; //Must be offset         --The offsets 1 and 2 can be used together to create a rule identical to adjacency
+			}
+			if(!restrictions.isOffset1True()) {
+				if((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) return false; //Must not be offset
+			}
+		}
+		if (restrictions.isOffset2Preference()) {
+			if (restrictions.isOffset2True()) {
+				if((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0) return false; //Must be offset 2
+			}
+			if (!restrictions.isOffset2True()) {
+				if((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0) return false; //Must not be offset 2
+			}
+		}
+		return true; //if vertex0 passes the gauntlet of restriction checks, return true, otherwise it got sent home where it failed. There's not really a need to go through the rest of the tests if it fails once.
+	}
 	/** Method for determining which side of a line a point is. Useful for finding a point within a shape.
 	 * @param a First coordinate of the line
 	 * @param b Second Coordinate of the line

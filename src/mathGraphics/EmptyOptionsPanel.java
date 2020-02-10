@@ -34,4 +34,9 @@ public class EmptyOptionsPanel extends OptionPanel {
 		return "Pick a Design";
 	}
 
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
+	}
+
 }

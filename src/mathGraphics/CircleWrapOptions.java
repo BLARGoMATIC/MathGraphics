@@ -91,4 +91,9 @@ public class CircleWrapOptions extends OptionPanel {
 		return "Circle Wrap Animation";
 	}
 
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
+	}
+
 }

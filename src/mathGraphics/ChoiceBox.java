@@ -2,6 +2,7 @@ package mathGraphics;
 
 import javax.swing.JComboBox;
 
+@Deprecated
 public class ChoiceBox extends JComboBox<String> {
 	
 	/**

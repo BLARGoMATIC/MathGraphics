@@ -15,6 +15,7 @@ public class ChaosTriangleOptions extends OptionPanel {
 	private static final long serialVersionUID = 7685755187905813097L;
 	JTextField iField;
 	
+	@Deprecated
 	public ChaosTriangleOptions() {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
@@ -57,6 +58,11 @@ public class ChaosTriangleOptions extends OptionPanel {
 	@Override
 	public String toString() {
 		return "Chaos Triangle";
+	}
+
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
 	}
 
 }

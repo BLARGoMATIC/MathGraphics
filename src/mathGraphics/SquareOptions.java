@@ -128,4 +128,9 @@ public class SquareOptions extends OptionPanel {
 		return "Square Fractal";
 	}
 
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
+	}
+
 }

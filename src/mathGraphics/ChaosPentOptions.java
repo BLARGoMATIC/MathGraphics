@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+@Deprecated
 public class ChaosPentOptions extends OptionPanel {
 
 	/**
@@ -72,6 +73,11 @@ public class ChaosPentOptions extends OptionPanel {
 	@Override
 	public String toString() {
 		return "Chaos Pentagon";
+	}
+
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
 	}
 
 }

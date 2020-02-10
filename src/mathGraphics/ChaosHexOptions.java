@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+@Deprecated
 public class ChaosHexOptions extends OptionPanel {
 
 	/**
@@ -72,6 +73,11 @@ public class ChaosHexOptions extends OptionPanel {
 	@Override
 	public String toString() {
 		return "Chaos Hexagon";
+	}
+
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
 	}
 
 }

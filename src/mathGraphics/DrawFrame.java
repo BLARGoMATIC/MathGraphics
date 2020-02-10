@@ -22,6 +22,10 @@ public class DrawFrame extends JFrame{
 	 */
 	int[] args;
 	/**
+	 * Array of VertexRestrictions, each represents a set a restrictions for choosing a vertex relative to past chosen vertices.
+	 */
+	VertexRestrictions[] restrictions;
+	/**
 	 * 
 	 */
 	private DrawPatterns dp;
@@ -34,9 +38,10 @@ public class DrawFrame extends JFrame{
 	 * @param pattern	Pattern to draw. 1 = Circle Wrap, 2 = Tree, 3 = Square Fractal, 4 = circle Fractal, 5 = Chaos Triangle, 6 = Chaos Pentagon
 	 * @param args		Arguments for the selected pattern
 	 */
-	public DrawFrame(int pattern, int[] args, String designName) {
+	public DrawFrame(int pattern, int[] args, VertexRestrictions[] restrictions, String designName) {
 		this.pattern = pattern;
 		this.args = args;
+		this.restrictions = restrictions;
 		grid = new LEDGrid(800, 800);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle(designName);
@@ -50,17 +55,17 @@ public class DrawFrame extends JFrame{
 		setAlwaysOnTop(true);  //Bring to the front, as .toFront() doesn't always work
 		setAlwaysOnTop(false);
 //		requestFocus();
-		addFocusListener(new FocusListener() { 
-			
-			@Override
-			public void focusLost(FocusEvent e) { // Closes the design window when focus is lost. This is done to avoid having a billion design windows in the background.
-//				dispose();
-			}
-			
-			@Override
-			public void focusGained(FocusEvent e) { // Do nothing
-			}
-		});
+//		addFocusListener(new FocusListener() { 
+//			
+//			@Override
+//			public void focusLost(FocusEvent e) { // Closes the design window when focus is lost. This is done to avoid having a billion design windows in the background.
+////				dispose();
+//			}
+//			
+//			@Override
+//			public void focusGained(FocusEvent e) { // Do nothing
+//			}
+//		});
 		
 		dp = new DrawPatterns(grid);
 	}
@@ -125,17 +130,8 @@ public class DrawFrame extends JFrame{
 			
 			dp.circleFractal((double)args[0], (double)args[1], (double)args[2], c1, c2);
 			break;
-		case 5:	//Chaos Triangle
-			dp.chaosTriangle(args[0]);
-			break;
-		case 6:	//Chaos Pentagon
-			dp.chaosPolygon(args[0], args[1], 5);
-			break;
-		case 7: //Chaos Hexagon
-			dp.chaosPolygon(args[0], args[1], 6);
-			break;
-		case 8: //Chaos Polygon
-			dp.chaosPolygon(args[0], args[1], args[2]);
+		case 5: //Chaos Polygon
+			dp.chaosPolygon(args[0], args[1], restrictions);
 			break;
 		default:
 			break;

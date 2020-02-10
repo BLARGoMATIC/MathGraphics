@@ -120,4 +120,9 @@ public class CircleFracOptions extends OptionPanel {
 		return "Circle Fractal";
 	}
 
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
+	}
+
 }

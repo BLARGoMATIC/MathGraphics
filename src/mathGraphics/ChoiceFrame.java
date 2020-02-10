@@ -78,14 +78,12 @@ public class ChoiceFrame {
 				new TreeOptions(),
 				new SquareOptions(),
 				new CircleFracOptions(),
-				new ChaosTriangleOptions(),
-				new ChaosPentOptions(),
-				new ChaosHexOptions(),
+//				new ChaosTriangleOptions(),
+//				new ChaosPentOptions(),
+//				new ChaosHexOptions(),
 				new ChaosPolyOptions()
 		};
-		
-		// Making the ComboBox, ChoiceBox class extends JComboBox<String> in order to add the methods set and getOptionPanel() so I can reach the OptionPanel method getArgs()
-		choiceBox = new JComboBox<OptionPanel>(designOptionCollection);
+		choiceBox = new JComboBox<OptionPanel>(designOptionCollection); //This is so much easier than xaml
 		designComboBoxPanel.add(choiceBox); //Adding it to the selections Panel,
 		choiceBox.setAlignmentY(Component.LEFT_ALIGNMENT);
 		choiceBox.setPreferredSize(new Dimension(200,25));
@@ -103,6 +101,7 @@ public class ChoiceFrame {
 		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		JButton drawButton = new JButton("Draw");
 		buttonPanel.add(drawButton);
+		buttonPanel.add(Box.createRigidArea(new Dimension(10,40)));
 		drawButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		drawButton.addActionListener(new ActionListener() { //'Draw Button' pushed
 
@@ -110,12 +109,12 @@ public class ChoiceFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (drawFrame != null) drawFrame.dispose();
 				try {
-					if(((OptionPanel) choiceBox.getSelectedItem()).getArgs() != null) {
+					if(((OptionPanel) choiceBox.getSelectedItem()).getArgs() != null) { //make sure that the panel parsing is working correctly
 						drawFrame = new DrawFrame(	
 								choiceBox.getSelectedIndex(),							//The Selected drawing
 								((OptionPanel) choiceBox.getSelectedItem()).getArgs(),  //Relevant Arguments for selected Drawing
+								((OptionPanel) choiceBox.getSelectedItem()).getRestrictions(),													//TODO remove when vertex restrictions fully implemented.
 								choiceBox.getSelectedItem().toString());				//Arguments for the selected drawing
-						
 						Thread t = new Thread() { //TODO why doesn't this work sometimes? Is it because java.awt.swing isn't thread-safe? For the moment it works fine... needs more testing.
 							public void run() {
 								drawFrame.draw();

@@ -145,5 +145,9 @@ public class TreeOptions extends OptionPanel {
 	public String toString() {
 		return "Tree Fractal";
 	}
+	@Override
+	public VertexRestrictions[] getRestrictions() {
+		return null;
+	}
 
 }

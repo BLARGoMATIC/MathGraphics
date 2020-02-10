@@ -41,6 +41,7 @@ public abstract class OptionPanel extends JPanel {
 	
 	//Start Methods
 	public abstract int[] getArgs();
+	public abstract VertexRestrictions[] getRestrictions();
 	public abstract String toString();
 	//End Methods
 }
