@@ -44,15 +44,15 @@ public class ChoiceFrame {
 	/** A panel to hold the design-specific options that change depending on the chosen design.
 	 *  
 	 */
-	private JPanel designOptionsPanel = new JPanel(); 
+	private JPanel designOptionsPanel; 
 	
 	/**Panel For the ComboBox
 	 */
-	private JPanel designComboBoxPanel = new JPanel();	
+	private JPanel designComboBoxPanel;	
 	
 	/**Panel For the 'Draw' Button
 	 */
-	private JPanel buttonPanel = new JPanel();
+	private JPanel buttonPanel;
 	
 	private DrawFrame drawFrame;
 	/** 
