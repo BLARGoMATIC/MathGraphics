@@ -353,9 +353,9 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		
 		//drawing the polygon
-		for (int k = 0; k <= (numSides-1); ++k) {
-			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
-		}
+//		for (int k = 0; k <= (numSides-1); ++k) {
+//			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
+//		}
 		
 		Coordinates pencil = new Coordinates(grid.numHorizontalLEDs/2, grid.numHorizontalLEDs/2);
 		Coordinates chosenVert = vertex[0]; //once a vertex has been chosen, it's set here.
@@ -382,14 +382,37 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
 				pencil.y = (chosenVert.y + pencil.y)/2;
 
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
 																	//TODO Make a color gradient for the number of times that a point is landed on.
+				int red = grid.leds[pencil.x][pencil.y].getRed();
+				int green = grid.leds[pencil.x][pencil.y].getGreen();
+				int blue = grid.leds[pencil.x][pencil.y].getBlue();
+				int rate = 20;
+				int threshold = 200;
+
+				if (
+						(grid.leds[pencil.x][pencil.y].getBlue() < threshold) & 
+						(grid.leds[pencil.x][pencil.y].getRed() == 0) & 
+						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
+					pencil.c = new Color(red ,green, blue + rate);
+				else if (
+//						(grid.leds[pencil.x][pencil.y].getBlue() > threshold) & 
+						(grid.leds[pencil.x][pencil.y].getRed() < threshold) & 
+						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
+					pencil.c = new Color(red + rate ,green, blue - rate);
+				else if (
+//						(grid.leds[pencil.x][pencil.y].getRed() > threshold) & 
+						(grid.leds[pencil.x][pencil.y].getGreen() < threshold))
+					pencil.c = new Color(red , green + rate, blue);
+				else if (grid.leds[pencil.x][pencil.y].getGreen() > threshold) 
+					pencil.c = pencil.c = grid.leds[pencil.x][pencil.y].brighter();
 				//Placing a point at that location
 				addPoint(pencil);
 				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
 			}
+			System.out.println("done");
 
-		// ***************************** Old Vertex Restrictions *****************************************
+		// ***************************** Old Vertex Restrictions ***************************************** //Kept for reference until presets are made
 //		if(iterations <= 0) iterations = 100000;
 //		switch(style) {
 //		case 1 :
@@ -592,7 +615,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	 * @param numSides number of Sides of the current polygon, for use in modulus functions for adjacency and offset
 	 * @param restrictions A collection of restrictions for determining the rules for selecting a new vertex.
 	 */
-	public boolean vertexValidation(int vertex0, int vertex1, int numSides, VertexRestrictions restrictions) { //TODO rework, it's ugly
+	public boolean vertexValidation(int vertex0, int vertex1, int numSides, VertexRestrictions restrictions) {
 		if (restrictions.isEquivalencePreference()) { //
 			if (restrictions.isEquivalenceTrue()) {
 				if(vertex0 != vertex1) return false; 	//Current vertex (vertex0) Must be equivalent to previous vertex (vertex1)
