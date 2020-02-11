@@ -5,12 +5,12 @@ import java.security.SecureRandom;
 
 public class DrawPatterns { //TODO clean up methods, it's kind of messy at the moment.
 
-	LEDGrid grid;
-	SecureRandom rand = new SecureRandom();
+	private LEDGrid grid;
+	private SecureRandom rand = new SecureRandom();
 	public DrawPatterns(LEDGrid grid) {
 		this.grid = grid;
 	}
-	public void at(int x, int y, Color c) { //similar to addPoint() however this one uses a Modulus to create a window wrapping function.
+	public void at(int x, int y, Color c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
 		x = Math.floorMod(x, grid.numHorizontalLEDs);
 		y = Math.floorMod(y, grid.numVerticalLEDs);
 		grid.leds[x][y] = c;
@@ -18,14 +18,12 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	public void addPoint(Coordinates a) {
 		at(a.x, a.y, a.c);
 	}
-
 	public void addPoint(int x, int y) {
 		at(x, y, Color.WHITE);
 	}
 	public void addPoint(int x, int y, Color c) {
 		at(x, y, c);
 	}
-
 	public void addLine(int x0, int y0, int x1, int y1) {//start color, end color
 
 		int maxDif = Math.max(Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), 1);
@@ -92,29 +90,20 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 					maxDif);
 		}
 	}
-	public void addTriangle(int x0, int y0,        // Start
-			int x1, int y1,        // Mid
-			int x2, int y2,        // End
-			Color c) {
+	public void addTriangle(int x0, int y0, int x1, int y1,int x2, int y2, Color c) {
 		// draw side 1
 		addLine( x0, y0, x1, y1, c, c);
 		// ... draw the other two sides ...
 		addLine( x1, y1, x2, y2, c, c);
 		addLine( x2, y2, x0, y0, c, c);
 	}
-
-	public void addTriangle(int x0, int y0,        // Start
-			int x1, int y1,        // Mid
-			int x2, int y2,        // End
-			Color c0, Color c1, Color c2) {  // Colors for vertices 0, 1, 2
+	public void addTriangle(int x0, int y0,int x1, int y1,int x2, int y2, Color c0, Color c1, Color c2) {  // Colors for vertices 0, 1, 2
 		// draw side 1
 		addLine( x0, y0, x1, y1, c0, c1);
 		// ... draw the other two sides ...
 		addLine( x1, y1, x2, y2, c1, c2);
 		addLine( x2, y2, x0, y0, c2, c0);
 	}
-
-	
 	public void addTriangle(Coordinates a, Coordinates b, Coordinates c) { 
 		addLine(a,b);
 		addLine(b,c);
@@ -184,17 +173,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				//since I want the color gradient to reset halfway through the circle.
 			}			
 		}
-		//		//Location for color filling
-		//		int ledX = 0;
-		//		int ledY = 0;
-		//		if((ledX >= 0 & ledX <= 99) && (ledY >= 0 && ledY <= 99)) {
-		//
-		//		}
-		//		if(ledY >= 0 && ledY <= 99) {
-		//		}
 	}
-
-
 	/** An interesting animation/pattern creator that draws larger and larger circles taking advantage of the window wrapping function.
 	 * @param size Radius of the largest circle
 	 * @param c1 Primary color of the circles
@@ -210,7 +189,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			grid.repaint();
 		}
 	}
-	
 	public void circleFractal(double radius, double x, double y, Color c1, Color c2) {
 		grid.repaint();
 		addCircle(0, radius, x, y, c1, c2);
@@ -221,7 +199,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			circleFractal(radius/2, x, y - radius, c1, c2);
 		}
 	}
-	
 	public void addSquare(int x, int y, int size, double rotation) {
 
 		int x0 = x;
@@ -239,7 +216,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			y1 = y0 + (int) Math.rint(size * Math.sin(rotation));
 		}
 	}
-	
 	public void squareFractal(int x, int y, int size, double rotation) {
 		grid.repaint();
 
@@ -266,7 +242,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			}
 		}
 	}
-	
 	public void tree(int x, int y, double length, double rotation, double branchSpread) {
 		int x0 = x;
 		int x1 = x + (int) Math.rint(length * Math.cos(rotation));
@@ -326,9 +301,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			//				e.printStackTrace();
 
 		}
-	}
-
-	
+	}	
 	/** Formerly ChaosPentagon(), now ChaosPolygon, I figured out how to generalize the chaos game and vertex choice restrictions.
 	 * @param iterations Number of dots to draw in the chaos game
 	 * @param numSides Number n of sides for the n-gon to draw. ex. 3 is a triangle, 4 is a square, etc.
@@ -353,9 +326,9 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		
 		//drawing the polygon
-		for (int k = 0; k <= (numSides-1); ++k) {
-			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
-		}
+//		for (int k = 0; k <= (numSides-1); ++k) {
+//			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
+//		}
 		
 		Coordinates pencil = new Coordinates(grid.numHorizontalLEDs/2, grid.numHorizontalLEDs/2);
 		Coordinates chosenVert = vertex[0]; //once a vertex has been chosen, it's set here.
@@ -382,14 +355,37 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
 				pencil.y = (chosenVert.y + pencil.y)/2;
 
-				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
+//				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
 																	//TODO Make a color gradient for the number of times that a point is landed on.
+				int red = grid.leds[pencil.x][pencil.y].getRed();
+				int green = grid.leds[pencil.x][pencil.y].getGreen();
+				int blue = grid.leds[pencil.x][pencil.y].getBlue();
+				int rate = 20;
+				int threshold = 200;
+
+				if (
+						(grid.leds[pencil.x][pencil.y].getBlue() < threshold) & 
+						(grid.leds[pencil.x][pencil.y].getRed() == 0) & 
+						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
+					pencil.c = new Color(red ,green, blue + rate);
+				else if (
+//						(grid.leds[pencil.x][pencil.y].getBlue() > threshold) & 
+						(grid.leds[pencil.x][pencil.y].getRed() < threshold) & 
+						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
+					pencil.c = new Color(red + rate ,green, blue - rate);
+				else if (
+//						(grid.leds[pencil.x][pencil.y].getRed() > threshold) & 
+						(grid.leds[pencil.x][pencil.y].getGreen() < threshold))
+					pencil.c = new Color(red , green + rate, blue);
+				else if (grid.leds[pencil.x][pencil.y].getGreen() > threshold) 
+					pencil.c = pencil.c = grid.leds[pencil.x][pencil.y].brighter();
 				//Placing a point at that location
 				addPoint(pencil);
 				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
 			}
+			System.out.println("done");
 
-		// ***************************** Old Vertex Restrictions *****************************************
+		// ***************************** Old Vertex Restrictions ***************************************** //Kept for reference until presets are made
 //		if(iterations <= 0) iterations = 100000;
 //		switch(style) {
 //		case 1 :
@@ -557,42 +553,13 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 //			break;
 //		}
 	}
-	// Currently unused, now using chaosPolygon(), previously chaosPentagon()
-	@SuppressWarnings("unused")
-	@Deprecated
-	public void chaosHexagon(int style, int iterations) {
-		
-		int numSides = 6;
-		Coordinates[] vertex = new Coordinates[6]; //array of vertices, 6 for a hexagon
-		
-		//Math for a regular hexagon, finding the coordinates of the vertices
-		double i = Math.toRadians(0); //Offset of first vertex
-		for(int k = 0; k < vertex.length; k++) {
-			vertex[k] = new Coordinates((int)Math.rint((2*grid.numHorizontalLEDs/numSides)*Math.cos(i))+grid.numHorizontalLEDs/2,
-										(int)Math.rint((2*grid.numVerticalLEDs/numSides)*Math.sin(i))+grid.numVerticalLEDs/2);
-			i += 2*Math.PI/numSides;
-		}
-		//drawing the hexagon
-		for (int k = 0; k < numSides; ++k) {
-			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
-		}
-
-		Coordinates pencil = new Coordinates(grid.numHorizontalLEDs/2, grid.numHorizontalLEDs/2);
-		Coordinates vert = vertex[0]; //to be initialized later
-		int vertexBuffer = 0; //Buffer for vertex choice restrictions in the chaos game
-		int vertexBuffer2 = 0; //second buffer for vertex restrictions
-
-		//Selecting a random point
-		pencil.x = rand.nextInt((3*grid.numHorizontalLEDs/5)+1) + (1*grid.numHorizontalLEDs/5);
-		pencil.y = rand.nextInt((3*grid.numVerticalLEDs/5)+1) + (1*grid.numVerticalLEDs/5);
-	}
 	/** Returns true if the supplied vertex passes all tests supplied by the supplied VertexRestrictions, returns false otherwise.
 	 * @param vertex0 The Current Vertex (index) that must be checked against the chosen vertex restrictions
 	 * @param vertex1 The Previous Vertex (index) or the vertex to check against vertex0 (The Vertex Buffer)
 	 * @param numSides number of Sides of the current polygon, for use in modulus functions for adjacency and offset
 	 * @param restrictions A collection of restrictions for determining the rules for selecting a new vertex.
 	 */
-	public boolean vertexValidation(int vertex0, int vertex1, int numSides, VertexRestrictions restrictions) { //TODO rework, it's ugly
+	public boolean vertexValidation(int vertex0, int vertex1, int numSides, VertexRestrictions restrictions) {
 		if (restrictions.isEquivalencePreference()) { //
 			if (restrictions.isEquivalenceTrue()) {
 				if(vertex0 != vertex1) return false; 	//Current vertex (vertex0) Must be equivalent to previous vertex (vertex1)
@@ -660,7 +627,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		return result;
 	}
-
 }
 
 
