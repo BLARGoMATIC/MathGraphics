@@ -576,32 +576,42 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		if (restrictions.isAdjacentPreference()) {
 			if (restrictions.isAdjacentTrue()) {
-				if(((vertex1 + 1)%numSides != vertex0) & ((vertex1 - 1)%numSides != vertex0)) return false; //Must be Adjacent
+				if(((vertex1 + 1)%numSides != vertex0) & ((vertex1 + (numSides- 1))%numSides != vertex0)) return false; //Must be Adjacent
 			}
 			if (!restrictions.isAdjacentTrue()) {
-				if(((vertex1 + 1)%numSides == vertex0) | ((vertex1 - 1)%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
+				if(((vertex1 + 1)%numSides == vertex0) | ((vertex1 + (numSides- 1))%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
 			}
 		}
-		if (restrictions.isOffset1Preference()) {
+		if (restrictions.isOffset1Preference() & restrictions.isOffset2Preference()) {//Both offsets are selected, this is to make sure there isn't any conflict in the 'must be' rules
+			
+			if (restrictions.isOffset1True() & restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) & ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
+			}
+			else if (restrictions.isOffset1True() & !restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) & ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
+			}
+			else if (!restrictions.isOffset1True() & restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) & ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
+			}
+			else if (!restrictions.isOffset1True() & !restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) | ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
+			}
+			
+			
+		}
+		else if (restrictions.isOffset1Preference() & !(restrictions.isOffset2Preference())) {//Only Offset1
 			if (restrictions.isOffset1True()) {
 				if((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) return false; //Must be offset         --The offsets 1 and 2 can be used together to create a rule identical to adjacency
-			
-			
-				
 			}
-			if(!restrictions.isOffset1True()) {
+			else if(!restrictions.isOffset1True()) {
 				if((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) return false; //Must be not offset
 			}
 		}
-		if (restrictions.isOffset2Preference()) {
+		else if (restrictions.isOffset2Preference() & !restrictions.isOffset1Preference()) {//Only Offset2
 			if (restrictions.isOffset2True()) {
 				if((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0) return false; //Must be offset 2
-			
-			
-			
-			
 			}
-			if (!restrictions.isOffset2True()) {
+			else if (!restrictions.isOffset2True()) {
 				if((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0) return false; //Must be not offset 2
 			}
 		}
