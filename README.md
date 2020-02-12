@@ -15,7 +15,7 @@ Equivalence - must be or must not be equal to the last chosen vertex (v-1) and/o
 Adjacency - must be or must not be adjacent to (v-1) and/or (v-2)
 Offset - Similar to Adjacency but a custom number of 'hops' over instead of just 1
 
-# Results
+# Some Results
 ![Serpinski Triangle](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Serpinksi%20Triangle.png?raw=true)
 ![Pentagon current vertex cannot equal previous vertex](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Pentagon%202.png?raw=true)
 ![Example-Picture2](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Hexagon%20Star.png?raw=true)
