@@ -1,5 +1,4 @@
-## MathGraphics
- fiddling with the chaos game and modulus window function
+https://en.wikipedia.org/wiki/Chaos_game
 
 # Examples
 ![Example-Picture1](https://github.com/BLARGoMATIC/MathGraphics/blob/master/bin/Pictures/Chaos%20Triangle.png?raw=true)
