@@ -11,7 +11,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		this.grid = grid;
 	}
 	public void at(int x, int y, Color c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
-		x = Math.floorMod(x, grid.numHorizontalLEDs);
+		x = Math.floorMod(x, grid.width);
 		y = Math.floorMod(y, grid.numVerticalLEDs);
 		grid.leds[x][y] = c;
 	}
@@ -184,7 +184,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	public void circleAnimation(int size, Color c1, Color c2, boolean showIncrement) {
 		grid.setShowIncrement(showIncrement);
 		for(int k=0; k <= size; k++) {
-			addCircle(0,k,grid.numHorizontalLEDs/2,grid.numVerticalLEDs/2, c1, c2); //Draw many circles in the center, gradually getting bigger
+			addCircle(0,k,grid.width/2,grid.numVerticalLEDs/2, c1, c2); //Draw many circles in the center, gradually getting bigger
 			grid.setIncrement(k);
 			grid.repaint();
 		}
@@ -320,23 +320,23 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			i = 0;
 		}
 		for(int k = 0; k < vertex.length; k++) {
-			vertex[k] = new Coordinates((int)Math.rint(((2 * numSides / 5)*grid.numHorizontalLEDs/numSides)*Math.cos(i))+grid.numHorizontalLEDs/(2), 
+			vertex[k] = new Coordinates((int)Math.rint(((2 * numSides / 5)*grid.width/numSides)*Math.cos(i))+grid.width/(2), 
 										(int)Math.rint(((2* numSides / 5)*grid.numVerticalLEDs/numSides)*Math.sin(i))+grid.numVerticalLEDs/(2));
 			i += 2*Math.PI/numSides;
 		}
 		
-		//drawing the polygon
+		//drawing the polygon TODO Make this an Toggle-able option
 //		for (int k = 0; k <= (numSides-1); ++k) {
 //			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
 //		}
 		
-		Coordinates pencil = new Coordinates(grid.numHorizontalLEDs/2, grid.numHorizontalLEDs/2);
+		Coordinates pencil = new Coordinates(grid.width/2, grid.width/2);
 		Coordinates chosenVert = vertex[0]; //once a vertex has been chosen, it's set here.
 		int vertexBuffer = 0; //Buffer for Chaos restrictions
 		int vertexBuffer2 = 0;
 
 		//Selecting a random point
-			pencil.x = rand.nextInt((3*grid.numHorizontalLEDs/numSides)+1) + (1*grid.numHorizontalLEDs/numSides);
+			pencil.x = rand.nextInt((3*grid.width/numSides)+1) + (1*grid.width/numSides);
 			pencil.y = rand.nextInt((3*grid.numVerticalLEDs/numSides)+1) + (1*grid.numVerticalLEDs/numSides);
 			
 			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
@@ -354,14 +354,14 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				chosenVert = vertex[vertIndex];
 
 				vertexBuffer2 = vertexBuffer;
-				vertexBuffer = vertIndex; //Set vertex buffer for next iteration
+				vertexBuffer = vertIndex; //Set vertex buffers for next iteration
 
 				//moving halfway to that vertex
 				pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
 				pencil.y = (chosenVert.y + pencil.y)/2;
 
 //				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
-																	//TODO Make a color gradient for the number of times that a point is landed on.
+																	
 				int red = grid.leds[pencil.x][pencil.y].getRed();
 				int green = grid.leds[pencil.x][pencil.y].getGreen();
 				int blue = grid.leds[pencil.x][pencil.y].getBlue();
@@ -375,7 +375,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 					pencil.c = new Color(red ,green, blue + rate);
 				else if (
 //						(grid.leds[pencil.x][pencil.y].getBlue() > threshold) & 
-						(grid.leds[pencil.x][pencil.y].getRed() < threshold) & 
+						(grid.leds[pencil.x][pencil.y].getRed() < (threshold)) & 
 						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
 					pencil.c = new Color(red + rate ,green, blue - rate);
 				else if (
@@ -384,12 +384,12 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 					pencil.c = new Color(red , green + rate, blue);
 				else if (grid.leds[pencil.x][pencil.y].getGreen() > threshold) 
 					pencil.c = pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+				
 				//Placing a point at that location
 				addPoint(pencil);
-//				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
+				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
 			}
-			grid.repaint();
-//			System.out.println("done");
+//			grid.repaint();
 
 		// ***************************** Old Vertex Restrictions ***************************************** //Kept for reference until presets are made
 //		if(iterations <= 0) iterations = 100000;

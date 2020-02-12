@@ -2,11 +2,9 @@ package mathGraphics;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import javax.swing.JFrame;
 
-public class DrawFrame extends JFrame{
+public class DrawFrame extends JFrame{ //TODO separate this class from JFrame, as it adds no functionality. All it's doing is handling
 	
 	/**
 	 * 
@@ -42,32 +40,19 @@ public class DrawFrame extends JFrame{
 		this.pattern = pattern;
 		this.args = args;
 		this.restrictions = restrictions;
-		grid = new LEDGrid(800, 800);
+		grid = new LEDGrid(new Dimension(800,800));
+		dp = new DrawPatterns(grid);
+		add(grid);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle(designName);
-		add(grid);
 		setMinimumSize(new Dimension(800+16,800+39));
+//		setResizable(false);
 		pack();
 //		setSize(500 + 16,  // Add side borders
 //				500 + 39); // Add title bar and bottom  border     
-		grid.setVisible(true);
 		setVisible(true); //TODO Fiddle with placement of this.
 		setAlwaysOnTop(true);  //Bring to the front, as .toFront() doesn't always work
 		setAlwaysOnTop(false);
-//		requestFocus();
-//		addFocusListener(new FocusListener() { 
-//			
-//			@Override
-//			public void focusLost(FocusEvent e) { // Closes the design window when focus is lost. This is done to avoid having a billion design windows in the background.
-////				dispose();
-//			}
-//			
-//			@Override
-//			public void focusGained(FocusEvent e) { // Do nothing
-//			}
-//		});
-		
-		dp = new DrawPatterns(grid);
 	}
 	
 	public void draw() {

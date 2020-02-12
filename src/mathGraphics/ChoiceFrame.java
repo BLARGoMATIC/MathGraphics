@@ -1,12 +1,12 @@
 package mathGraphics;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -62,34 +62,46 @@ public class ChoiceFrame {
 		designOptionsPanel = new JPanel();
 		designComboBoxPanel = new JPanel();
 		buttonPanel = new JPanel();
-		
-		//Setting up the Frame and adding the panels
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.PAGE_AXIS));
-		mainFrame.add(designComboBoxPanel);
-		mainFrame.add(designOptionsPanel); //empty for now
-		mainFrame.add(buttonPanel);
+
+		JButton drawButton = new JButton("Draw");
+		JButton saveButton = new JButton("Save");
 		
 		//Creating the different optionPanels for each selection of the ComboBox. Each extends JPanel, and implements the interface OptionPanel 
 		//so I can pull the option values in one line once the draw button is pressed. PolyMorphism is an amazing thing.
 		OptionPanel designOptionCollection[] = {
-//				new EmptyOptionsPanel(),
+				//						new EmptyOptionsPanel(),
 				new ChaosPolyOptions(),
-//				new CircleWrapOptions(),
-//				new TreeOptions(),
-//				new SquareOptions(),
-//				new CircleFracOptions()
-//				new ChaosTriangleOptions(),
-//				new ChaosPentOptions(),
-//				new ChaosHexOptions(),
-				
+				//						new CircleWrapOptions(),
+				//						new TreeOptions(),
+				//						new SquareOptions(),
+				//						new CircleFracOptions()
+				//						new ChaosTriangleOptions(),
+				//						new ChaosPentOptions(),
+				//						new ChaosHexOptions(),
+
 		};
+		
+		//Setting up the Frame and adding the panels
+		mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.PAGE_AXIS));
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		mainFrame.setLocation(screen.width/2-mainFrame.getSize().width/2+100, screen.height/2-mainFrame.getSize().height/2-250);
+		
 		choiceBox = new JComboBox<OptionPanel>(designOptionCollection); //This is so much easier than xaml
 		designComboBoxPanel.add(choiceBox); //Adding it to the selections Panel,
-		choiceBox.setAlignmentY(Component.LEFT_ALIGNMENT);
 		choiceBox.setPreferredSize(new Dimension(200,25));
 		choiceBox.setSelectedIndex(0);
 		designOptionsPanel.add((JPanel)choiceBox.getSelectedItem());
+		buttonPanel.setLayout(new BoxLayout(buttonPanel , BoxLayout.X_AXIS));
+		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
+		buttonPanel.add(drawButton);
+		buttonPanel.add(Box.createRigidArea(new Dimension(10,40)));
+		buttonPanel.add(saveButton);
+		mainFrame.add(designComboBoxPanel);
+		mainFrame.add(designOptionsPanel); //empty for now
+		mainFrame.add(buttonPanel);
+		
+		//Action Listeners
+
 		choiceBox.addActionListener(new ActionListener() { //when the selection changes, so does the available designOptionsPanel, since each Drawing has different arguments
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -99,16 +111,10 @@ public class ChoiceFrame {
 				mainFrame.pack();
 			}
 		});
-		buttonPanel.setLayout(new BoxLayout(buttonPanel , BoxLayout.X_AXIS));
-		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
-		JButton drawButton = new JButton("Draw");
-		buttonPanel.add(drawButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(10,40)));
-		drawButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		drawButton.addActionListener(new ActionListener() { //'Draw Button' pushed
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) { //TODO Not Currently used.
 				if (drawFrame != null) drawFrame.dispose();
 				try {
 					if(((OptionPanel) choiceBox.getSelectedItem()).getArgs() != null) { //make sure that the panel parsing is working correctly
@@ -132,8 +138,6 @@ public class ChoiceFrame {
 				}
 			}
 		});
-		JButton saveButton = new JButton("Save");
-		buttonPanel.add(saveButton);
 		saveButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -143,25 +147,41 @@ public class ChoiceFrame {
 				BufferedImage image = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D g2d = image.createGraphics();
 				drawFrame.print(g2d);
+//				ImageWriter writer = ImageIO.getImageWriter(null);
+//				ImageWriteParam param = new Im
 				
-				JFrame parentFrame = new JFrame();
-				JFileChooser fileChooser = new JFileChooser();
+				File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Pictures" + System.getProperty("file.separator") + "Chaos Game");	//Pathname to where we want to save a picture
+				if (!saveDirectory.exists()) saveDirectory.mkdir(); //Folder don't real, make real
+				File fileToCheck = new File(saveDirectory + System.getProperty("file.separator") + "Chaos Polygon"), fileToSave = new File(fileToCheck + ".png");
+				if (fileToSave.exists()) {
+					System.out.println(fileToCheck.toString() + " do real");
+					int i = 1;
+					do {
+						fileToSave = new File(fileToCheck + " " + Integer.toString(i) + ".png");
+						i++;
+					} while (fileToSave.exists());
+				}
+				else System.out.println(fileToCheck.toString() + " don't real");
+				
+				JFileChooser fileChooser = new JFileChooser(saveDirectory);
 				fileChooser.setFileFilter(new FileNameExtensionFilter("PNG and JPG Images", "png", "jpg"));
 				fileChooser.setDialogTitle("Saved Image Location");
+				fileChooser.setSelectedFile(fileToSave);
+				
+				JFrame parentFrame = new JFrame();
 				int userSelection = fileChooser.showSaveDialog(parentFrame);
 				if(userSelection == JFileChooser.APPROVE_OPTION) {
 					try {
-						ImageIO.write(image, "png", fileChooser.getSelectedFile());
+						ImageIO.write(image, "PNG", fileChooser.getSelectedFile());
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					} 
 				}				
 			}
 		});
-		
+
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		mainFrame.setLocation(dim.width/2-mainFrame.getSize().width/2-400, dim.height/2-mainFrame.getSize().height/2-100);
 		mainFrame.setVisible(true);
 	}
 }

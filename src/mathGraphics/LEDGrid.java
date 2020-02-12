@@ -1,8 +1,5 @@
 package mathGraphics;
 
-// A mathGraphics of LEDs for a simple display.
-// @author Brian Stafford
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,63 +10,47 @@ import javax.swing.JPanel;
  *  LEDGrid is a grid of tiny rectangles each taking up a single pixel, giving me a virtual TV screen.
  */
 @SuppressWarnings("serial")
-public class LEDGrid extends JPanel { //I thank my teacher in my college intro to java class for showing me code very similar to this.
-	//// Member Data
-	//
-	public int numHorizontalLEDs, numVerticalLEDs;  // Grid size
+public class LEDGrid extends JPanel { 
+	public int width, numVerticalLEDs;  // Grid size
 	public boolean showIncrement = false;
 	private int increment;
-	Color leds[][];  // An array of arrays of Color. AKA a 2-dimensional array of colors or "LEDs"
-	                 // Intended to be int values for Red, Green, and Blue.
-					 // 0 is black, 255 is the maximum brightness.
-	
-	//// Ctors
-	//
-	// Set size of Grid in terms of LEDs.
-	//
-    public LEDGrid(int _numHorizontalLEDs, int _numVerticalLEDs) {
-    	// The mathGraphics requires at least one LED in each direction.
-    	if( _numHorizontalLEDs < 1 ) { 
-    		numHorizontalLEDs = 1;
+	Color leds[][];  // An array of arrays of Color. AKA a 2-dimensional field of colors or "LEDs"
+    public LEDGrid(Dimension dimension) {
+    	// The LED Grid requires at least one LED in each direction.
+    	if( dimension.width < 1 ) { 
+    		width = 1;
     	}
-    	else numHorizontalLEDs = _numHorizontalLEDs;
-    	if( _numVerticalLEDs < 1) {
+    	else width = dimension.width;
+    	if( dimension.height < 1) {
     		numVerticalLEDs = 1;
     	}
-    	else numVerticalLEDs   = _numVerticalLEDs;
-    	
+    	else numVerticalLEDs   = dimension.height;
     	// Color object creation patters for an array of arrays.
-    	leds = new Color[numHorizontalLEDs][numVerticalLEDs];
+    	leds = new Color[width][numVerticalLEDs];
     	int i, j;
-    	for( i = 0; i < numHorizontalLEDs; i++ ) {
+    	for( i = 0; i < width; i++ ) {
     		for( j = 0; j < numVerticalLEDs; j++ ) {
     			leds[i][j] = new Color(0, 0, 0);
     		}
     	}
-    	setPreferredSize(new Dimension(500,500));
-    } // END  ctor LEDGrid(horizontal size, vertical size)
-    
+    	setMinimumSize(dimension);
+    }
     /**
 	 * @return the showIncrement
 	 */
 	public boolean isShowIncrement() {
 		return showIncrement;
 	}
-
 	/**
 	 * @param showIncrement Set true if you want increment 'i' to be shown in the drawing.
 	 */
 	public void setShowIncrement(boolean showIncrement) {
 		this.showIncrement = showIncrement;
 	}
-
-	//// Methods
-    
     public String getIncrement(){
     	String increment = "i = " + this.increment;
     	return increment;
     }
-    
     /**
      * @param i Increment for whatever Loop you're drawing
      */
@@ -84,18 +65,8 @@ public class LEDGrid extends JPanel { //I thank my teacher in my college intro t
     @Override
     public void paintComponent(Graphics g)
     {
-//    	super.paintComponent(g); //Wow, haha. having this here caused a recursion and subsequently high cpu usage. Removed, it works fine.
-
-    	int w = getWidth() /  numHorizontalLEDs;    	
+    	int w = getWidth() /  width;    	
     	int h = getHeight() / numVerticalLEDs;
-//    	int i, j;
-//    	
-//    	for( i = 0; i < numHorizontalLEDs; i++ ) {
-//    		for( j = 0; j < numVerticalLEDs; j++ ) {
-//    			g.setColor(leds[i][j]);
-//    			g.fillRect(i * w, j * h, w, h);
-//    		}
-//    	}
     	int i = 0;
     	for( Color[] led1 : leds) {
     		int j = 0;
@@ -107,5 +78,5 @@ public class LEDGrid extends JPanel { //I thank my teacher in my college intro t
     		i++;
     	}
     	if(showIncrement) drawIncrement(g);
-    } // END  paintComponent()
-} // END  class LEDGrid
+    }
+}
