@@ -72,7 +72,7 @@ public class DrawFrame extends JFrame{
 	
 	public void draw() {
 		switch(pattern) {
-		case 1: //Circle Wrap
+		case 5: //Circle Wrap
 			Color c1 = Color.RED;
 			Color c2 = Color.BLUE;
 			boolean showIncrement = false;
@@ -130,7 +130,7 @@ public class DrawFrame extends JFrame{
 			
 			dp.circleFractal((double)args[0], (double)args[1], (double)args[2], c1, c2);
 			break;
-		case 5: //Chaos Polygon
+		case 0: //Chaos Polygon
 			dp.chaosPolygon(args[0], args[1], restrictions);
 			break;
 		default:

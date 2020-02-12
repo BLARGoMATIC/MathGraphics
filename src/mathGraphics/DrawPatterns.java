@@ -365,7 +365,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				int red = grid.leds[pencil.x][pencil.y].getRed();
 				int green = grid.leds[pencil.x][pencil.y].getGreen();
 				int blue = grid.leds[pencil.x][pencil.y].getBlue();
-				int rate = 20;
+				int rate = 30;
 				int threshold = 200;
 
 				if (

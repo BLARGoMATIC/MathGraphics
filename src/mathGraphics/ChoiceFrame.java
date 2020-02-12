@@ -73,21 +73,23 @@ public class ChoiceFrame {
 		//Creating the different optionPanels for each selection of the ComboBox. Each extends JPanel, and implements the interface OptionPanel 
 		//so I can pull the option values in one line once the draw button is pressed. PolyMorphism is an amazing thing.
 		OptionPanel designOptionCollection[] = {
-				new EmptyOptionsPanel(),
-				new CircleWrapOptions(),
-				new TreeOptions(),
-				new SquareOptions(),
-				new CircleFracOptions(),
+//				new EmptyOptionsPanel(),
+				new ChaosPolyOptions(),
+//				new CircleWrapOptions(),
+//				new TreeOptions(),
+//				new SquareOptions(),
+//				new CircleFracOptions()
 //				new ChaosTriangleOptions(),
 //				new ChaosPentOptions(),
 //				new ChaosHexOptions(),
-				new ChaosPolyOptions()
+				
 		};
 		choiceBox = new JComboBox<OptionPanel>(designOptionCollection); //This is so much easier than xaml
 		designComboBoxPanel.add(choiceBox); //Adding it to the selections Panel,
 		choiceBox.setAlignmentY(Component.LEFT_ALIGNMENT);
 		choiceBox.setPreferredSize(new Dimension(200,25));
 		choiceBox.setSelectedIndex(0);
+		designOptionsPanel.add((JPanel)choiceBox.getSelectedItem());
 		choiceBox.addActionListener(new ActionListener() { //when the selection changes, so does the available designOptionsPanel, since each Drawing has different arguments
 			@Override
 			public void actionPerformed(ActionEvent e) {

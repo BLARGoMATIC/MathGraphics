@@ -88,7 +88,7 @@ public class VertexRestrictionsPanel extends JPanel {
 		ButtonGroup o1ButtonGroup = new ButtonGroup();
 		o1ButtonGroup.add(o1ButtonTrue);
 		o1ButtonGroup.add(o1ButtonFalse);
-		o1ButtonTrue.setSelected(true);
+		o1ButtonFalse.setSelected(true);
 		o1TextField = new JTextField();
 		o1TextField.setText("0");
 		o1TextField.setPreferredSize(new Dimension(30,20));
@@ -110,7 +110,7 @@ public class VertexRestrictionsPanel extends JPanel {
 		ButtonGroup o2ButtonGroup = new ButtonGroup();
 		o2ButtonGroup.add(o2ButtonTrue);
 		o2ButtonGroup.add(o2ButtonFalse);
-		o2ButtonTrue.setSelected(true);
+		o2ButtonFalse.setSelected(true);
 		o2TextField = new JTextField();
 		o2TextField.setText("0");
 		o2TextField.setPreferredSize(new Dimension(30,20));
