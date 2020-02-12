@@ -344,7 +344,12 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				int vertIndex;
 				do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
 					vertIndex = rand.nextInt(numSides);
-				} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) | !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
+				} while 
+					(!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) | !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
+//					((vertIndex == ((vertexBuffer  + 1) % numSides) |
+//					 vertIndex == ((vertexBuffer  + (numSides - 1)) % numSides) )&(
+//					 vertIndex == ((vertexBuffer2 + 1) % numSides) |
+//					 vertIndex == ((vertexBuffer2 + (numSides - 1)) % numSides) ));
 
 				chosenVert = vertex[vertIndex];
 
@@ -381,9 +386,10 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 					pencil.c = pencil.c = grid.leds[pencil.x][pencil.y].brighter();
 				//Placing a point at that location
 				addPoint(pencil);
-				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
+//				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
 			}
-			System.out.println("done");
+			grid.repaint();
+//			System.out.println("done");
 
 		// ***************************** Old Vertex Restrictions ***************************************** //Kept for reference until presets are made
 //		if(iterations <= 0) iterations = 100000;
@@ -565,31 +571,38 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				if(vertex0 != vertex1) return false; 	//Current vertex (vertex0) Must be equivalent to previous vertex (vertex1)
 			}
 			if (!restrictions.isEquivalenceTrue()) {
-				if(vertex0 == vertex1) return false; 	//Must not be equivalent
+				if(vertex0 == vertex1) return false; 	//Must be not equivalent
 			}
 		}
 		if (restrictions.isAdjacentPreference()) {
 			if (restrictions.isAdjacentTrue()) {
-				if(((vertex1 + 1)%numSides != vertex0)&((vertex1 - 1)%numSides != vertex0)) return false; //Must be Adjacent
+				if(((vertex1 + 1)%numSides != vertex0) & ((vertex1 - 1)%numSides != vertex0)) return false; //Must be Adjacent
 			}
 			if (!restrictions.isAdjacentTrue()) {
-				if(((vertex1 + 1)%numSides == vertex0)&((vertex1 - 1)%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
+				if(((vertex1 + 1)%numSides == vertex0) | ((vertex1 - 1)%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
 			}
 		}
 		if (restrictions.isOffset1Preference()) {
 			if (restrictions.isOffset1True()) {
 				if((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) return false; //Must be offset         --The offsets 1 and 2 can be used together to create a rule identical to adjacency
+			
+			
+				
 			}
 			if(!restrictions.isOffset1True()) {
-				if((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) return false; //Must not be offset
+				if((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) return false; //Must be not offset
 			}
 		}
 		if (restrictions.isOffset2Preference()) {
 			if (restrictions.isOffset2True()) {
 				if((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0) return false; //Must be offset 2
+			
+			
+			
+			
 			}
 			if (!restrictions.isOffset2True()) {
-				if((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0) return false; //Must not be offset 2
+				if((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0) return false; //Must be not offset 2
 			}
 		}
 		return true; //if vertex0 passes the gauntlet of restriction checks, return true, otherwise it got sent home where it failed. There's not really a need to go through the rest of the tests if it fails once.

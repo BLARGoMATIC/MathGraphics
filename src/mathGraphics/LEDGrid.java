@@ -13,13 +13,13 @@ import javax.swing.JPanel;
  *  LEDGrid is a grid of tiny rectangles each taking up a single pixel, giving me a virtual TV screen.
  */
 @SuppressWarnings("serial")
-public class LEDGrid extends JPanel {
+public class LEDGrid extends JPanel { //I thank my teacher in my college intro to java class for showing me code very similar to this.
 	//// Member Data
 	//
 	public int numHorizontalLEDs, numVerticalLEDs;  // Grid size
 	public boolean showIncrement = false;
 	private int increment;
-	Color leds[][];  // An array of arrays of Color.
+	Color leds[][];  // An array of arrays of Color. AKA a 2-dimensional array of colors or "LEDs"
 	                 // Intended to be int values for Red, Green, and Blue.
 					 // 0 is black, 255 is the maximum brightness.
 	
@@ -84,7 +84,7 @@ public class LEDGrid extends JPanel {
     @Override
     public void paintComponent(Graphics g)
     {
-    	super.paintComponent(g);
+//    	super.paintComponent(g); //Wow, haha. having this here caused a recursion and subsequently high cpu usage. Removed, it works fine.
 
     	int w = getWidth() /  numHorizontalLEDs;    	
     	int h = getHeight() / numVerticalLEDs;
