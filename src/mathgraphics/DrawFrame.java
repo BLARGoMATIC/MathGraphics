@@ -1,15 +1,13 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+
 import javax.swing.JFrame;
 
-public class DrawFrame extends JFrame{ //TODO separate this class from JFrame, as it adds no functionality. All it's doing is handling
+public class DrawFrame { //TODO separate this class from JFrame, as it adds no functionality. All it's doing is handling
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7835202908244170085L;
 	/**
 	 * Integer identifier for pattern to draw: 
 	 * 1 = Circle Wrap, 2 = Tree, 3 = Square Fractal, 4 = circle Fractal, 5 = Chaos Triangle, 6 = Chaos Pentagon
@@ -19,10 +17,12 @@ public class DrawFrame extends JFrame{ //TODO separate this class from JFrame, a
 	 * Integer Array of arguments for the selected pattern to draw. Should have already been check that all elements are indeed integers.
 	 */
 	int[] args;
+	
+	private JFrame frame;
 	/**
 	 * Array of VertexRestrictions, each represents a set a restrictions for choosing a vertex relative to past chosen vertices.
 	 */
-	VertexRestrictions[] restrictions;
+	private VertexRestrictions[] restrictions;
 	/**
 	 * 
 	 */
@@ -31,28 +31,30 @@ public class DrawFrame extends JFrame{ //TODO separate this class from JFrame, a
 	 * 
 	 */
 	private LEDGrid grid;
+	private Options options;
 	
 	/**
 	 * @param pattern	Pattern to draw. 1 = Circle Wrap, 2 = Tree, 3 = Square Fractal, 4 = circle Fractal, 5 = Chaos Triangle, 6 = Chaos Pentagon
 	 * @param args		Arguments for the selected pattern
 	 */
-	public DrawFrame(int pattern, int[] args, VertexRestrictions[] restrictions, String designName) {
-		this.pattern = pattern;
-		this.args = args;
-		this.restrictions = restrictions;
+	public DrawFrame(Options options) {//TODO change these arguments to an options object
+		this.options = options;
+		frame = new JFrame(options.name);
 		grid = new LEDGrid(new Dimension(800,800));
 		dp = new DrawPatterns(grid);
-		add(grid);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setTitle(designName);
-		setMinimumSize(new Dimension(800+16,800+39));
-//		setResizable(false);
-		pack();
-//		setSize(500 + 16,  // Add side borders
-//				500 + 39); // Add title bar and bottom  border     
-		setVisible(true); //TODO Fiddle with placement of this.
-		setAlwaysOnTop(true);  //Bring to the front, as .toFront() doesn't always work
-		setAlwaysOnTop(false);
+		frame.add(grid);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setMinimumSize(new Dimension(800+16,800+39));
+		frame.pack();   
+		frame.setVisible(true); //TODO Fiddle with placement of this.
+		frame.setAlwaysOnTop(true);  //Bring to the front, as .toFront() doesn't always work
+		frame.setAlwaysOnTop(false);
+	}
+	public void print(Graphics2D g2d) {
+		frame.print(g2d);
+	}
+	public Dimension getFrameSize() {
+		return frame.getSize();
 	}
 	
 	public void draw() {
@@ -116,11 +118,15 @@ public class DrawFrame extends JFrame{ //TODO separate this class from JFrame, a
 			dp.circleFractal((double)args[0], (double)args[1], (double)args[2], c1, c2);
 			break;
 		case 0: //Chaos Polygon
-			dp.chaosPolygon(args[0], args[1], restrictions);
+			dp.chaosPolygon(options);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	public void dispose() {
+		frame.dispose();
 	}
 
 }

@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -18,24 +18,14 @@ public class ChaosPolyOptions extends OptionPanel {
 	 */
 	private static final long serialVersionUID = 2462036980524333807L;
 	
-	
-//	JComboBox<String> styleBox;
-//	private static final String[] styleChoices = { //TODO add presets
-//			"Pick a Style",
-//			"Style 1",
-//			"Style 2",
-//			"Style 3",
-//			"Style 4",
-//			"Style 5"
-//	};
-	private JTextField iterationsField, sidesField;
-	private VertexRestrictionsPanel v1Panel, v2Panel;
+	private JTextField iterationsField;
+	private JTextField sidesField;
+	private VertexRestrictionsPanel v1Panel;
+	private VertexRestrictionsPanel v2Panel;
 	
 	public ChaosPolyOptions() {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-//		styleBox = new JComboBox<String>(styleChoices);
-//		styleBox.setSelectedIndex(0);
-		
+
 		JPanel sidesPanel = new JPanel();
 		JLabel sidesLabel = new JLabel("# of Sides");
 		sidesPanel.setLayout(new BoxLayout(sidesPanel, BoxLayout.LINE_AXIS));
@@ -94,41 +84,51 @@ public class ChaosPolyOptions extends OptionPanel {
 				//nothing
 			}
 		});
-		v1Panel = new VertexRestrictionsPanel("V\u2081");
-		v2Panel = new VertexRestrictionsPanel("V\u2082");
+		v1Panel = new VertexRestrictionsPanel("V\u2081");//v1 options
+		v2Panel = new VertexRestrictionsPanel("V\u2082");//v2 options
 		
-//		add(styleBox);
-//		add(Box.createRigidArea(new Dimension(0,10)));
 		add(sidesPanel);
 		add(iterationsPanel);
 		add(Box.createRigidArea(new Dimension(0,10)));
 		add(v1Panel);
 		add(v2Panel);
 		setVisible(true);
-		
 	}
 	
-	@Override
 	public int[] getArgs() {
-		try {
-			int[] args = {
-					Integer.parseInt(iterationsField.getText()),
-					Integer.parseInt(sidesField.getText())};
-			return args;
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, "Only Numbers Please");
-			return null;
-		}
+		return new int[] {
+				Integer.parseInt(iterationsField.getText()),
+				Integer.parseInt(sidesField.getText())};
 	}
-	@Override
 	public VertexRestrictions[] getRestrictions() {
-		VertexRestrictions[] restrictions = {v1Panel.getRestrictions(), v2Panel.getRestrictions()};
-		return restrictions;
+		return new VertexRestrictions[] {v1Panel.getRestrictions(), v2Panel.getRestrictions()};
 	}
 
 	@Override
 	public String toString() {
 		return "Chaos Polygon";
+	}
+
+	@Override
+	public Options getOptions() {
+		Options options = super.getOptions();
+		options.args = new int[] {
+				Integer.parseInt(sidesField.getText()),
+				Integer.parseInt(iterationsField.getText())};
+		options.restrictions = new VertexRestrictions[] {v1Panel.getRestrictions(), v2Panel.getRestrictions()};
+		return options;
+	}
+
+	@Override
+	public void setOptions(Options options) {
+		try {
+			sidesField.setText(Integer.toString(options.args[0]));
+			iterationsField.setText(Integer.toString(options.args[1]));
+			v1Panel.setRestrictions(options.restrictions[0]);
+			v2Panel.setRestrictions(options.restrictions[1]);
+		} catch (NullPointerException e){
+			JOptionPane.showMessageDialog(null, "That preset is incompatible with this design.");
+		}
 	}
 
 }

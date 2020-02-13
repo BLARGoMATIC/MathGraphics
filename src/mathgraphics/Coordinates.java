@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 import java.awt.Color;
 /**
  * Stores the x and y coordinates for a given point along with a given color

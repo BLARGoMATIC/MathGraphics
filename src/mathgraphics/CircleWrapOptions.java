@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -66,7 +66,6 @@ public class CircleWrapOptions extends OptionPanel {
 		
 	}//END Default Constructor
 	
-	@Override
 	public int[] getArgs() {
 		
 		try {
@@ -91,9 +90,13 @@ public class CircleWrapOptions extends OptionPanel {
 		return "Circle Wrap Animation";
 	}
 
-	@Override
 	public VertexRestrictions[] getRestrictions() {
 		return null;
+	}
+
+	@Override
+	public void setOptions(Options options) {
+		
 	}
 
 }

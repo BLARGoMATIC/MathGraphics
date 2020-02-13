@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 @Deprecated
-public class ChaosHexOptions extends OptionPanel {
+public class ChaosPentOptions extends OptionPanel {
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public class ChaosHexOptions extends OptionPanel {
 			"Style 4",
 			"Style 5"};
 	
-	public ChaosHexOptions() {
+	public ChaosPentOptions() {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		styleBox = new JComboBox<String>(styleChoices);
 		styleBox.setSelectedIndex(0);
@@ -56,7 +56,6 @@ public class ChaosHexOptions extends OptionPanel {
 		setVisible(true);
 	}
 
-	@Override
 	public int[] getArgs() {
 		try {
 
@@ -72,12 +71,17 @@ public class ChaosHexOptions extends OptionPanel {
 
 	@Override
 	public String toString() {
-		return "Chaos Hexagon";
+		return "Chaos Pentagon";
+	}
+
+	public VertexRestrictions[] getRestrictions() {
+		return null;
 	}
 
 	@Override
-	public VertexRestrictions[] getRestrictions() {
-		return null;
+	public void setOptions(Options options) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

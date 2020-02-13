@@ -1,10 +1,8 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,19 +17,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-//import com.sun.glass.ui.InvokeLaterDispatcher;
-
 /**
  * @author John
  *
  */
 public class ChoiceFrame {
 
-	/**
-	 * 
-	 */
-	@SuppressWarnings("unused")
-	private static final long serialVersionUID = -2430971203566192633L;
 	/**Pull-down combination box for selecting a design.
 	 * 
 	 */
@@ -68,7 +59,7 @@ public class ChoiceFrame {
 		
 		//Creating the different optionPanels for each selection of the ComboBox. Each extends JPanel, and implements the interface OptionPanel 
 		//so I can pull the option values in one line once the draw button is pressed. PolyMorphism is an amazing thing.
-		OptionPanel designOptionCollection[] = {
+		OptionPanel[] designOptionCollection = {
 				//						new EmptyOptionsPanel(),
 				new ChaosPolyOptions(),
 				//						new CircleWrapOptions(),
@@ -78,7 +69,6 @@ public class ChoiceFrame {
 				//						new ChaosTriangleOptions(),
 				//						new ChaosPentOptions(),
 				//						new ChaosHexOptions(),
-
 		};
 		
 		//Setting up the Frame and adding the panels
@@ -86,7 +76,7 @@ public class ChoiceFrame {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		mainFrame.setLocation(screen.width/2-mainFrame.getSize().width/2+100, screen.height/2-mainFrame.getSize().height/2-250);
 		
-		choiceBox = new JComboBox<OptionPanel>(designOptionCollection); //This is so much easier than xaml
+		choiceBox = new JComboBox<>(designOptionCollection); //This is so much easier than xaml
 		designComboBoxPanel.add(choiceBox); //Adding it to the selections Panel,
 		choiceBox.setPreferredSize(new Dimension(200,25));
 		choiceBox.setSelectedIndex(0);
@@ -102,67 +92,50 @@ public class ChoiceFrame {
 		
 		//Action Listeners
 
-		choiceBox.addActionListener(new ActionListener() { //when the selection changes, so does the available designOptionsPanel, since each Drawing has different arguments
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		choiceBox.addActionListener(e -> { //when the selection changes, so does the available designOptionsPanel, since each Drawing has different arguments
 				designOptionsPanel.removeAll(); //Remove everything, if anything is there, just a precaution to avoid choices for a different design from showing up.
 				designOptionsPanel.add((JPanel)choiceBox.getSelectedItem());
 				mainFrame.validate();
 				mainFrame.pack();
-			}
-		});
-		drawButton.addActionListener(new ActionListener() { //'Draw Button' pushed
-
-			@Override
-			public void actionPerformed(ActionEvent e) { //TODO Not Currently used.
+			});
+		drawButton.addActionListener(e -> { //Changes when
 				if (drawFrame != null) drawFrame.dispose();
 				try {
-					if(((OptionPanel) choiceBox.getSelectedItem()).getArgs() != null) { //make sure that the panel parsing is working correctly
-						drawFrame = new DrawFrame(	
-								choiceBox.getSelectedIndex(),							//The Selected drawing
-								((OptionPanel) choiceBox.getSelectedItem()).getArgs(),  //Relevant Arguments for selected Drawing
-								((OptionPanel) choiceBox.getSelectedItem()).getRestrictions(),													//TODO remove when vertex restrictions fully implemented.
-								choiceBox.getSelectedItem().toString());				//Arguments for the selected drawing
-						Thread t = new Thread() { //TODO why doesn't this work sometimes? Is it because java.awt.swing isn't thread-safe? For the moment it works fine... needs more testing.
-							public void run() {
-								drawFrame.draw();
-							}
-						};
-						t.start();
-					}
+					drawFrame = new DrawFrame(((OptionPanel)choiceBox.getSelectedItem()).getOptions());
+					Thread t = new Thread() { //why doesn't this work sometimes? For the moment it works fine, needs more testing.
+						@Override
+						public void run() {
+							drawFrame.draw();
+						}
+					};
+					t.start();
 				} catch (NullPointerException e1) {
 					JOptionPane.showMessageDialog(null, "Select a Design");
 					e1.printStackTrace();
-				} catch (Exception e2) {
+				} catch (NumberFormatException e2) {
+					JOptionPane.showMessageDialog(null, "Numbers Only Please");
 					e2.printStackTrace();
+				} catch (Exception e3) {
+					e3.printStackTrace();
 				}
-			}
 		});
-		saveButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				Dimension d = drawFrame.getSize();
+		saveButton.addActionListener(e -> {
+				Dimension d = drawFrame.getFrameSize();
 				BufferedImage image = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D g2d = image.createGraphics();
 				drawFrame.print(g2d);
-//				ImageWriter writer = ImageIO.getImageWriter(null);
-//				ImageWriteParam param = new Im
-				
-				File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Pictures" + System.getProperty("file.separator") + "Chaos Game");	//Pathname to where we want to save a picture
+				String fileSeparator = System.getProperty("file.separator");
+				File saveDirectory = new File(System.getProperty("user.home") + fileSeparator + "Pictures" + fileSeparator + "Chaos Game");	//Pathname to where we want to save a picture
 				if (!saveDirectory.exists()) saveDirectory.mkdir(); //Folder don't real, make real
-				File fileToCheck = new File(saveDirectory + System.getProperty("file.separator") + "Chaos Polygon"), fileToSave = new File(fileToCheck + ".png");
+				File fileToCheck = new File(saveDirectory + fileSeparator + "Chaos Polygon");
+				File fileToSave = new File(fileToCheck + ".png");
 				if (fileToSave.exists()) {
-					System.out.println(fileToCheck.toString() + " do real");
 					int i = 1;
 					do {
 						fileToSave = new File(fileToCheck + " " + Integer.toString(i) + ".png");
 						i++;
 					} while (fileToSave.exists());
 				}
-				else System.out.println(fileToCheck.toString() + " don't real");
-				
 				JFileChooser fileChooser = new JFileChooser(saveDirectory);
 				fileChooser.setFileFilter(new FileNameExtensionFilter("PNG and JPG Images", "png", "jpg"));
 				fileChooser.setDialogTitle("Saved Image Location");
@@ -177,9 +150,8 @@ public class ChoiceFrame {
 						e1.printStackTrace();
 					} 
 				}				
-			}
-		});
-
+			});
+		
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
 		mainFrame.setVisible(true);

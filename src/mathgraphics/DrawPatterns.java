@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Color;
 import java.security.SecureRandom;
@@ -11,8 +11,8 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		this.grid = grid;
 	}
 	public void at(int x, int y, Color c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
-		x = Math.floorMod(x, grid.width);
-		y = Math.floorMod(y, grid.numVerticalLEDs);
+		x = Math.floorMod(x, grid.getHorizontalLEDs());
+		y = Math.floorMod(y, grid.getVerticalLEDs());
 		grid.leds[x][y] = c;
 	}
 	public void addPoint(Coordinates a) {
@@ -124,12 +124,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	 * @param color - The color of the circle
 	 */
 	public void addCircle(double radius, double x, double y, Color color) {
-		//		for(double i = 0; i <= (2*Math.PI); i += (2*Math.PI)/360) {//Java calculates sin and cos in radians, so I have to convert to degrees
-		//			mathGraphics.leds
-		//				[(int) Math.rint(x + radius * Math.cos(i))]
-		//				[(int) Math.rint(y + radius * Math.sin(i))]
-		//						= new Color(color.getRed(),color.getGreen(),color.getBlue());
-		//		}
 		addCircle(0, radius, x, y, color, color);
 	}
 	/**No rotation parameter, defaults to 0 degrees, primary color on the right, secondary color on the left.
@@ -184,7 +178,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	public void circleAnimation(int size, Color c1, Color c2, boolean showIncrement) {
 		grid.setShowIncrement(showIncrement);
 		for(int k=0; k <= size; k++) {
-			addCircle(0,k,grid.width/2,grid.numVerticalLEDs/2, c1, c2); //Draw many circles in the center, gradually getting bigger
+			addCircle(0,k,grid.getHorizontalLEDs()/2,grid.getVerticalLEDs()/2, c1, c2); //Draw many circles in the center, gradually getting bigger
 			grid.setIncrement(k);
 			grid.repaint();
 		}
@@ -226,7 +220,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		int y1 = y + (int) Math.rint(size * Math.sin(rotation));
 
 		if(size > 10) {	//If the square is too small, that's the end of the loop
-			//			addSquare(x, y, size, rotation);
 			size /= 2;	//Shrink the Square
 			rotation += Math.PI/3;	//Rotate the square 120 degrees about one of its corners
 			for(int i = 0; i < 4; i++) {
@@ -256,7 +249,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 	}
 	/**This method draws you a Sierpinski Triangle, using the Chaos game
-	 * 
+	 * @deprecated currently unused, Now you can just call the chaosPolygon() method instead
 	 */
 	@Deprecated
 	public void chaosTriangle(int iterations) {
@@ -290,16 +283,10 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			//moving halfway to that vertex
 			z.x = (vert.x + z.x)/2;
 			z.y = (vert.y + z.y)/2;
-			//			z.c = new Color(rand.nextInt(255)+1,rand.nextInt(255)+1,rand.nextInt(255)+1);
-
+			
 			//Placing a point at current location
 			addPoint(z);
 			grid.repaint();
-			//			try {
-			//				Thread.sleep(1);
-			//			} catch (InterruptedException e) {
-			//				e.printStackTrace();
-
 		}
 	}	
 	/** Formerly ChaosPentagon(), now ChaosPolygon, I figured out how to generalize the chaos game and vertex choice restrictions.
@@ -307,12 +294,15 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	 * @param numSides Number n of sides for the n-gon to draw. ex. 3 is a triangle, 4 is a square, etc.
 	 * @param restrictions
 	 */
-	public void chaosPolygon(int iterations, int numSides, VertexRestrictions[] restrictions) {
+	public void chaosPolygon(Options options) {
+		int numSides = options.args[0];
+		int iterations = options.args[1];
+		VertexRestrictions[] restrictions = options.restrictions;
 		Coordinates[] vertex = new Coordinates[numSides];
 		
 		//		*************** Math for a regular pentagon ******************
 		//Adjusting the rotational offset of the polygon so it's symmetrical along the vertical axis
-		double i = -Math.PI/(numSides);
+		double i;
 		if (numSides % 2 != 0) {
 			i = -Math.PI/(2*numSides);
 		}//Even sided polygons are already symmetrical, so there's no need to rotate them.
@@ -320,24 +310,24 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			i = 0;
 		}
 		for(int k = 0; k < vertex.length; k++) {
-			vertex[k] = new Coordinates((int)Math.rint(((2 * numSides / 5)*grid.width/numSides)*Math.cos(i))+grid.width/(2), 
-										(int)Math.rint(((2* numSides / 5)*grid.numVerticalLEDs/numSides)*Math.sin(i))+grid.numVerticalLEDs/(2));
+			vertex[k] = new Coordinates((int)Math.rint(((2f * numSides / 5)*grid.getHorizontalLEDs()/numSides)*Math.cos(i))+grid.getHorizontalLEDs()/(2), 
+										(int)Math.rint(((2f * numSides / 5)*grid.getVerticalLEDs()/numSides)*Math.sin(i))+grid.getVerticalLEDs()/(2));
 			i += 2*Math.PI/numSides;
 		}
 		
-		//drawing the polygon TODO Make this an Toggle-able option
+//		//drawing the polygon TODO Make this a Toggle-able option
 //		for (int k = 0; k <= (numSides-1); ++k) {
 //			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
 //		}
 		
-		Coordinates pencil = new Coordinates(grid.width/2, grid.width/2);
-		Coordinates chosenVert = vertex[0]; //once a vertex has been chosen, it's set here.
+		Coordinates pencil = new Coordinates(grid.getHorizontalLEDs()/2, grid.getHorizontalLEDs()/2);
+		Coordinates chosenVert; //once a vertex has been chosen, it's set here.
 		int vertexBuffer = 0; //Buffer for Chaos restrictions
 		int vertexBuffer2 = 0;
 
 		//Selecting a random point
-			pencil.x = rand.nextInt((3*grid.width/numSides)+1) + (1*grid.width/numSides);
-			pencil.y = rand.nextInt((3*grid.numVerticalLEDs/numSides)+1) + (1*grid.numVerticalLEDs/numSides);
+			pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
+			pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
 			
 			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
@@ -345,7 +335,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
 					vertIndex = rand.nextInt(numSides);
 				} while 
-					(!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) | !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
+					(!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) || !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
 //					((vertIndex == ((vertexBuffer  + 1) % numSides) |
 //					 vertIndex == ((vertexBuffer  + (numSides - 1)) % numSides) )&(
 //					 vertIndex == ((vertexBuffer2 + 1) % numSides) |
@@ -387,9 +377,8 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				
 				//Placing a point at that location
 				addPoint(pencil);
-				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' however directly calling repaint() is bad practice and I should find another way to do this.
+				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' move it to the other side of the bracket to only see the complete drawing.
 			}
-//			grid.repaint();
 
 		// ***************************** Old Vertex Restrictions ***************************************** //Kept for reference until presets are made
 //		if(iterations <= 0) iterations = 100000;
@@ -486,7 +475,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 //				} while (
 //							vertIndex == vertexBuffer ||
 //									(vertIndex == ((vertexBuffer  + 2) % numSides) |
-//									 vertIndex == ((vertexBuffer  + (numSides - 2)) % numSides) )&(
+//									 vertIndex == ((vertexBuffer  + (numSides - 2)) % numSides) )&&(
 //									 vertIndex == ((vertexBuffer2 + 2) % numSides) |
 //									 vertIndex == ((vertexBuffer2 + (numSides - 2)) % numSides) )); //Method 4, chosen vertex must be adjacent to previous 2 vertices
 //								 chosenVert = vertex[vertIndex];
@@ -576,30 +565,30 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		if (restrictions.isAdjacentPreference()) {
 			if (restrictions.isAdjacentTrue()) {
-				if(((vertex1 + 1)%numSides != vertex0) & ((vertex1 + (numSides- 1))%numSides != vertex0)) return false; //Must be Adjacent
+				if(((vertex1 + 1)%numSides != vertex0) && ((vertex1 + (numSides- 1))%numSides != vertex0)) return false; //Must be Adjacent
 			}
 			if (!restrictions.isAdjacentTrue()) {
-				if(((vertex1 + 1)%numSides == vertex0) | ((vertex1 + (numSides- 1))%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
+				if(((vertex1 + 1)%numSides == vertex0) || ((vertex1 + (numSides- 1))%numSides == vertex0)) return false; //Must be not adjacent. Yes it's different than !adjacent, as we need to be able express no preference.
 			}
 		}
-		if (restrictions.isOffset1Preference() & restrictions.isOffset2Preference()) {//Both offsets are selected, this is to make sure there isn't any conflict in the 'must be' rules
+		if (restrictions.isOffset1Preference() && restrictions.isOffset2Preference()) {//Both offsets are selected, this is to make sure there isn't any conflict in the 'must be' rules
 			
-			if (restrictions.isOffset1True() & restrictions.isOffset2True()) {
-				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) & ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
+			if (restrictions.isOffset1True() && restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) && ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
 			}
-			else if (restrictions.isOffset1True() & !restrictions.isOffset2True()) {
-				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) & ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
+			else if (restrictions.isOffset1True() && !restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) && ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
 			}
-			else if (!restrictions.isOffset1True() & restrictions.isOffset2True()) {
-				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) & ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
+			else if (!restrictions.isOffset1True() && restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) && ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
 			}
-			else if (!restrictions.isOffset1True() & !restrictions.isOffset2True()) {
-				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) | ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
+			else if (!restrictions.isOffset1True() && !restrictions.isOffset2True()) {
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) || ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
 			}
 			
 			
 		}
-		else if (restrictions.isOffset1Preference() & !(restrictions.isOffset2Preference())) {//Only Offset1
+		else if (restrictions.isOffset1Preference() && !(restrictions.isOffset2Preference())) {//Only Offset1
 			if (restrictions.isOffset1True()) {
 				if((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) return false; //Must be offset         --The offsets 1 and 2 can be used together to create a rule identical to adjacency
 			}
@@ -607,7 +596,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				if((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) return false; //Must be not offset
 			}
 		}
-		else if (restrictions.isOffset2Preference() & !restrictions.isOffset1Preference()) {//Only Offset2
+		else if (restrictions.isOffset2Preference() && !restrictions.isOffset1Preference()) {//Only Offset2
 			if (restrictions.isOffset2True()) {
 				if((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0) return false; //Must be offset 2
 			}
@@ -624,31 +613,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	 * @return True if the point is on the right side of the line, point a being on the top. So if the point is on the left of the line, but a is below b, the answer will still be true.
 	 */
 	public boolean onRight(Coordinates a, Coordinates b, Coordinates pencil) {
-		boolean result = false;
-		int res = (b.x - a.x)*(pencil.y - a.y)-(pencil.x - a.x)*(b.y - a.y);
-
-		////	For testing purposes; a way for the program to 'show its work' in the debugger.
-		//		int res1a = (b.x - a.x);
-		//		int res1b = (z.y - a.y);
-		//		int res1 = res1a*res1b;
-		//		int res2a = (z.x - a.x);
-		//		int res2b = (b.y - a.y);
-		//		int res2 = res2a*res2b;
-		//		int res = res1 - res2;
-
-		if(res > 0) {//left side
-			result = false;
-			//			System.out.println("on the left");
-		}
-		else if(res == 0) {//on the line
-			result = false;
-			//			System.out.println("on the line");
-		}
-		else if(res < 0) {//right side
-			result = true;
-			//			System.out.println("on the right");
-		}
-		return result;
+		return ((b.x - a.x)*(pencil.y - a.y)-(pencil.x - a.x)*(b.y - a.y) < 0);
 	}
 }
 

@@ -1,11 +1,20 @@
-package mathGraphics;
+package mathgraphics;
 
 public class VertexRestrictions {
-	private boolean equivalencePreference, equivalenceTrue, 
-					adjacentPreference, adjacentTrue, 
-					offset1Preference, offset1True, 
-					offset2Preference, offset2True;
-	private int offset1Integer, offset2Integer;
+	private boolean equivalencePreference;
+	private boolean equivalenceTrue;
+	private boolean adjacentPreference;
+	private boolean adjacentTrue;
+	private boolean offset1Preference;
+	private boolean offset1True;
+	private boolean offset2Preference;
+	private boolean offset2True;
+	
+	private int offset1Integer;
+	private int offset2Integer;
+	
+	//Methods
+	
 	public boolean isEquivalencePreference() {
 		return equivalencePreference;
 	}

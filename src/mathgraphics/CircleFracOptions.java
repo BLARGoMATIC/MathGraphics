@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -100,7 +100,6 @@ public class CircleFracOptions extends OptionPanel {
 		setVisible(true);
 	}
 	
-	@Override
 	public int[] getArgs() {
 		try {
 
@@ -120,9 +119,20 @@ public class CircleFracOptions extends OptionPanel {
 		return "Circle Fractal";
 	}
 
-	@Override
 	public VertexRestrictions[] getRestrictions() {
 		return null;
+	}
+
+	@Override
+	public Options getOptions() {
+		
+		return null;
+	}
+
+	@Override
+	public void setOptions(Options options) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

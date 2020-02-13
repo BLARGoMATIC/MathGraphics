@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
@@ -23,31 +23,45 @@ public class VertexRestrictionsPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -1302085671128912513L;
 	
-	private JRadioButton eButtonTrue,
-				 eButtonFalse,
-				 eButtonNP,
-				 aButtonTrue,
-				 aButtonFalse,
-				 aButtonNP,
-				 o1ButtonTrue,
-				 o1ButtonFalse,
-				 o2ButtonTrue,
-				 o2ButtonFalse;
-	private ButtonGroup eButtonGroup, aButtonGroup, o1ButtonGroup, o2ButtonGroup;
-	private JTextField o1TextField, o2TextField;
-//	boolean eButtonVal, eButtonPref, aButton, o1Button, o2Button;
+	JPanel ePanel;
+	JLabel eLabel;
+	JPanel aPanel;
+	JLabel aLabel;
+	JPanel o1Panel;
+	JLabel o1Label;
+	JPanel o2Panel;
+	JLabel o2Label;
+	
+	private JRadioButton eButtonTrue;
+	private JRadioButton eButtonFalse;
+	private JRadioButton eButtonNP;
+	private JRadioButton aButtonTrue;
+	private JRadioButton aButtonFalse;
+	private JRadioButton aButtonNP;
+	private JRadioButton o1ButtonTrue;
+	private JRadioButton o1ButtonFalse;
+	private JRadioButton o2ButtonTrue;
+	private JRadioButton o2ButtonFalse;
+	
+	private ButtonGroup eButtonGroup; 
+	private ButtonGroup aButtonGroup;
+	private ButtonGroup o1ButtonGroup;
+	private ButtonGroup o2ButtonGroup;
+	
+	private JTextField o1TextField; 
+	private JTextField o2TextField;
 
 	public VertexRestrictionsPanel(String title) {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setBorder(BorderFactory.createTitledBorder(title));
 		
-		JPanel ePanel = new JPanel();
+		ePanel = new JPanel();
+		eLabel = new JLabel("Equivalent");
 		ePanel.setLayout(new BoxLayout(ePanel, BoxLayout.LINE_AXIS));
-		JLabel eLabel = new JLabel("Equivalent");
 		eButtonTrue = new JRadioButton("Y");
 		eButtonFalse = new JRadioButton("N");
 		eButtonNP = new JRadioButton("NP");
-		ButtonGroup eButtonGroup = new ButtonGroup();
+		eButtonGroup = new ButtonGroup();
 		eButtonGroup.add(eButtonTrue);
 		eButtonGroup.add(eButtonFalse);
 		eButtonGroup.add(eButtonNP);
@@ -61,13 +75,13 @@ public class VertexRestrictionsPanel extends JPanel {
 		ePanel.add(eButtonFalse);
 		ePanel.add(Box.createRigidArea(new Dimension(10,0)));
 
-		JPanel aPanel = new JPanel();
+		aPanel = new JPanel();
+		aLabel = new JLabel("Adjacent");
 		aPanel.setLayout(new BoxLayout(aPanel, BoxLayout.LINE_AXIS));
-		JLabel aLabel = new JLabel("Adjacent");
 		aButtonTrue = new JRadioButton("Y");
 		aButtonFalse = new JRadioButton("N");
 		aButtonNP = new JRadioButton("NP");
-		ButtonGroup aButtonGroup = new ButtonGroup();
+		aButtonGroup = new ButtonGroup();
 		aButtonGroup.add(aButtonTrue);
 		aButtonGroup.add(aButtonFalse);
 		aButtonGroup.add(aButtonNP);
@@ -80,12 +94,12 @@ public class VertexRestrictionsPanel extends JPanel {
 		aPanel.add(aButtonFalse);
 		aPanel.add(Box.createRigidArea(new Dimension(10,0)));
 
-		JPanel o1Panel = new JPanel();
+		o1Panel = new JPanel();
+		o1Label = new JLabel("Offset 1");
 		o1Panel.setLayout(new BoxLayout(o1Panel, BoxLayout.LINE_AXIS));
-		JLabel o1Label = new JLabel("Offset 1");
 		o1ButtonTrue = new JRadioButton("Y");
 		o1ButtonFalse = new JRadioButton("N");
-		ButtonGroup o1ButtonGroup = new ButtonGroup();
+		o1ButtonGroup = new ButtonGroup();
 		o1ButtonGroup.add(o1ButtonTrue);
 		o1ButtonGroup.add(o1ButtonFalse);
 		o1ButtonFalse.setSelected(true);
@@ -102,12 +116,12 @@ public class VertexRestrictionsPanel extends JPanel {
 		o1Panel.add(o1ButtonFalse);
 		o1Panel.add(Box.createRigidArea(new Dimension(10,0)));
 
-		JPanel o2Panel = new JPanel();
+		o2Panel = new JPanel();
+		o2Label = new JLabel("Offset 2");
 		o2Panel.setLayout(new BoxLayout(o2Panel, BoxLayout.LINE_AXIS));
-		JLabel o2Label = new JLabel("Offset 2");
 		o2ButtonTrue = new JRadioButton("Y");
 		o2ButtonFalse = new JRadioButton("N");
-		ButtonGroup o2ButtonGroup = new ButtonGroup();
+		o2ButtonGroup = new ButtonGroup();
 		o2ButtonGroup.add(o2ButtonTrue);
 		o2ButtonGroup.add(o2ButtonFalse);
 		o2ButtonFalse.setSelected(true);
@@ -124,19 +138,6 @@ public class VertexRestrictionsPanel extends JPanel {
 		o2Panel.add(o2ButtonFalse);
 		o2Panel.add(Box.createRigidArea(new Dimension(10,0)));
 
-//		eButtonTrue.addActionListener(this);
-//		eButtonFalse.addActionListener(this);
-//		eButtonNP.addActionListener(this);
-//		aButtonTrue.addActionListener(this);
-//		aButtonFalse.addActionListener(this);
-//		aButtonNP.addActionListener(this);
-//		o1ButtonTrue.addActionListener(this);
-//		o1ButtonFalse.addActionListener(this);
-//		o2ButtonTrue.addActionListener(this);
-//		o2ButtonFalse.addActionListener(this);
-//		o1TextField.addActionListener(this);
-//		o2TextField.addActionListener(this);
-
 		add(ePanel);
 		add(aPanel);
 		add(o1Panel);
@@ -149,7 +150,7 @@ public class VertexRestrictionsPanel extends JPanel {
 		restrictions.setEquivalenceTrue(eButtonTrue.isSelected()); 
 		restrictions.setAdjacentPreference(!aButtonNP.isSelected());
 		restrictions.setAdjacentTrue(aButtonTrue.isSelected());
-		try {
+
 			int offset = Integer.parseInt(o1TextField.getText());
 			if(offset != 0) {
 				restrictions.setOffset1Preference(true);
@@ -160,14 +161,8 @@ public class VertexRestrictionsPanel extends JPanel {
 				restrictions.setOffset1Preference(false);
 				restrictions.setOffset1Integer(0);
 			}
-		} catch (NumberFormatException e1) {
-			JOptionPane.showMessageDialog(null, "Only Integers Please");
-			e1.printStackTrace();
-			return null;
-		}
-		try {
-			int offset = Integer.parseInt(o2TextField.getText());
-			if(offset != 0) {
+			int offset2 = Integer.parseInt(o2TextField.getText());
+			if(offset2 != 0) {
 				restrictions.setOffset2Preference(true);
 				restrictions.setOffset2True(o2ButtonTrue.isSelected());
 				restrictions.setOffset2Integer(offset);
@@ -176,11 +171,23 @@ public class VertexRestrictionsPanel extends JPanel {
 				restrictions.setOffset2Preference(false);
 				restrictions.setOffset2Integer(0);
 			}
-		} catch (NumberFormatException e1) {
-			JOptionPane.showMessageDialog(null, "Only Integers Please");
-			e1.printStackTrace();
-			return null;
-		}
 		return restrictions;
+	}
+	public void setRestrictions(VertexRestrictions restrictions) {
+		if (restrictions.isEquivalencePreference()) eButtonNP.setSelected(true);
+		else if (restrictions.isEquivalenceTrue()) eButtonTrue.setSelected(true);
+		else eButtonFalse.setSelected(true);
+		
+		if (restrictions.isAdjacentPreference()) aButtonNP.setSelected(true);
+		else if (restrictions.isAdjacentTrue()) aButtonTrue.setSelected(true);
+		else aButtonFalse.setSelected(true);
+		
+		o1TextField.setText(Integer.toString(restrictions.getOffset1Integer()));
+		if (restrictions.isOffset1True()) o1ButtonTrue.setSelected(true);
+		else o1ButtonFalse.setSelected(true);
+		
+		o2TextField.setText(Integer.toString(restrictions.getOffset2Integer()));
+		if (restrictions.isOffset2True()) o2ButtonTrue.setSelected(true);
+		else o2ButtonFalse.setSelected(true);
 	}
 }

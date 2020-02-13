@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.LayoutManager;
 
@@ -24,19 +24,26 @@ public class EmptyOptionsPanel extends OptionPanel {
 		super(layout, isDoubleBuffered);
 	}
 
-	@Override
 	public int[] getArgs() {
-		return null;
+		return new int[0];
 	}
 
 	@Override
 	public String toString() {
-		return "Pick a Design";
+		return null;
+	}
+
+	public VertexRestrictions[] getRestrictions() {
+		return new VertexRestrictions[0];
 	}
 
 	@Override
-	public VertexRestrictions[] getRestrictions() {
+	public Options getOptions() {
 		return null;
+	}
+
+	@Override
+	public void setOptions(Options options) {
 	}
 
 }

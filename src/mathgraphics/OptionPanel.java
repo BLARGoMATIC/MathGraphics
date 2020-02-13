@@ -1,4 +1,4 @@
-package mathGraphics;
+package mathgraphics;
 
 import java.awt.LayoutManager;
 
@@ -11,7 +11,7 @@ public abstract class OptionPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -892834822827996414L;
-	public static final String[] COLOR_STRINGS = {			
+	protected static final String[] COLOR_STRINGS = {			
 			"Choose a Color", //0
 			"White",
 			"Black",
@@ -22,7 +22,6 @@ public abstract class OptionPanel extends JPanel {
 			"Orange",
 			"Yellow",
 	};
-
 	//End Members
 	
 	//Start Constructors
@@ -40,8 +39,10 @@ public abstract class OptionPanel extends JPanel {
 	//End Constructors
 	
 	//Start Methods
-	public abstract int[] getArgs();
-	public abstract VertexRestrictions[] getRestrictions();
+	public Options getOptions() {
+		return new Options(toString());
+	}
+	public abstract void setOptions(Options options);
+	@Override
 	public abstract String toString();
-	//End Methods
 }
