@@ -46,6 +46,8 @@ public class ChoiceFrame {
 	private JPanel buttonPanel;
 	
 	private DrawFrame drawFrame;
+	private JButton drawButton;
+	private JButton exportButton;
 	/** 
 	 */
 	public ChoiceFrame() {
@@ -53,9 +55,8 @@ public class ChoiceFrame {
 		designOptionsPanel = new JPanel();
 		designComboBoxPanel = new JPanel();
 		buttonPanel = new JPanel();
-
-		JButton drawButton = new JButton("Draw");
-		JButton saveButton = new JButton("Save");
+		drawButton = new JButton("Draw");
+		exportButton = new JButton("Export");
 		
 		//Creating the different optionPanels for each selection of the ComboBox. Each extends JPanel, and implements the interface OptionPanel 
 		//so I can pull the option values in one line once the draw button is pressed. PolyMorphism is an amazing thing.
@@ -85,7 +86,7 @@ public class ChoiceFrame {
 		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		buttonPanel.add(drawButton);
 		buttonPanel.add(Box.createRigidArea(new Dimension(10,40)));
-		buttonPanel.add(saveButton);
+		buttonPanel.add(exportButton);
 		mainFrame.add(designComboBoxPanel);
 		mainFrame.add(designOptionsPanel); //empty for now
 		mainFrame.add(buttonPanel);
@@ -102,9 +103,9 @@ public class ChoiceFrame {
 				if (drawFrame != null) drawFrame.dispose();
 				try {
 					drawFrame = new DrawFrame(((OptionPanel)choiceBox.getSelectedItem()).getOptions());
-					Thread t = new Thread() { //why doesn't this work sometimes? For the moment it works fine, needs more testing.
+					Thread t = new Thread() { //This somehow allows the design 'animation' to begin right when the frame opens, as opposed to having a white box for a little bit
 						@Override
-						public void run() {
+						public void run() {  //TODO find a way to kill this thread, or stop the drawing once the frame has been closed in order to prevent unnecessary cpu usage. Don't want to draw a picture we can't see!
 							drawFrame.draw();
 						}
 					};
@@ -119,39 +120,41 @@ public class ChoiceFrame {
 					e3.printStackTrace();
 				}
 		});
-		saveButton.addActionListener(e -> {
-				Dimension d = drawFrame.getFrameSize();
-				BufferedImage image = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D g2d = image.createGraphics();
-				drawFrame.print(g2d);
-				String fileSeparator = System.getProperty("file.separator");
-				File saveDirectory = new File(System.getProperty("user.home") + fileSeparator + "Pictures" + fileSeparator + "Chaos Game");	//Pathname to where we want to save a picture
-				if (!saveDirectory.exists()) saveDirectory.mkdir(); //Folder don't real, make real
-				File fileToCheck = new File(saveDirectory + fileSeparator + "Chaos Polygon");
-				File fileToSave = new File(fileToCheck + ".png");
-				if (fileToSave.exists()) {
-					int i = 1;
-					do {
-						fileToSave = new File(fileToCheck + " " + Integer.toString(i) + ".png");
-						i++;
-					} while (fileToSave.exists());
-				}
-				JFileChooser fileChooser = new JFileChooser(saveDirectory);
-				fileChooser.setFileFilter(new FileNameExtensionFilter("PNG and JPG Images", "png", "jpg"));
-				fileChooser.setDialogTitle("Saved Image Location");
-				fileChooser.setSelectedFile(fileToSave);
-				
-				JFrame parentFrame = new JFrame();
-				int userSelection = fileChooser.showSaveDialog(parentFrame);
-				if(userSelection == JFileChooser.APPROVE_OPTION) {
-					try {
-						ImageIO.write(image, "PNG", fileChooser.getSelectedFile());
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} 
-				}				
-			});
-		
+		exportButton.addActionListener(e -> {
+			String fileSeparator = System.getProperty("file.separator");
+			File saveDirectory = new File(System.getProperty("user.home") + fileSeparator + "Pictures" + fileSeparator + "Chaos Game");	//Pathname to where we want to save a picture
+			if (!saveDirectory.exists()) saveDirectory.mkdir(); //Folder don't real, make real
+			File fileToCheck = new File(saveDirectory + fileSeparator + "Chaos Polygon");
+			File fileToSave = new File(fileToCheck + ".png");
+			JFileChooser fileChooser = new JFileChooser(saveDirectory);
+
+			if (fileToSave.exists()) {
+				int i = 1;
+				do {
+					fileToSave = new File(fileToCheck + " " + Integer.toString(i) + ".png");
+					i++;
+				} while (fileToSave.exists());
+			}
+			fileChooser.setFileFilter(new FileNameExtensionFilter("PNG and JPG Images", "png", "jpg"));
+			fileChooser.setDialogTitle("Saved Image Location");
+			fileChooser.setSelectedFile(fileToSave);
+
+			Dimension d = drawFrame.getFrameSize();
+			BufferedImage image = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = image.createGraphics();
+			drawFrame.print(g2d);
+			JFrame parentFrame = new JFrame();
+			
+			int userSelection = fileChooser.showSaveDialog(parentFrame);
+			if(userSelection == JFileChooser.APPROVE_OPTION) {
+				try {
+					ImageIO.write(image, "PNG", fileChooser.getSelectedFile());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} 
+			}				
+		});
+
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
 		mainFrame.setVisible(true);

@@ -39,7 +39,7 @@ public abstract class OptionPanel extends JPanel {
 	//End Constructors
 	
 	//Start Methods
-	public Options getOptions() {
+	public Options getOptions() { //We don't really store Options, they're really more of a way to pass the state of the JComponents to the drawing program
 		return new Options(toString());
 	}
 	public abstract void setOptions(Options options);

@@ -10,19 +10,24 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	public DrawPatterns(LEDGrid grid) {
 		this.grid = grid;
 	}
-	public void at(int x, int y, Color c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
-		x = Math.floorMod(x, grid.getHorizontalLEDs());
-		y = Math.floorMod(y, grid.getVerticalLEDs());
-		grid.leds[x][y] = c;
+	public Mark at(Coordinates c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
+		return grid.leds[c.x][c.y];
 	}
 	public void addPoint(Coordinates a) {
-		at(a.x, a.y, a.c);
+		addPoint(a.x, a.y, a.mark);
 	}
 	public void addPoint(int x, int y) {
-		at(x, y, Color.WHITE);
+		addPoint(x, y, Color.WHITE);
 	}
 	public void addPoint(int x, int y, Color c) {
-		at(x, y, c);
+		x = Math.floorMod(x, grid.getHorizontalLEDs());
+		y = Math.floorMod(y, grid.getVerticalLEDs());
+		grid.leds[x][y] = new Mark(c);
+	}
+	public void addPoint(int x, int y, Mark m) {
+		x = Math.floorMod(x, grid.getHorizontalLEDs());
+		y = Math.floorMod(y, grid.getVerticalLEDs());
+		grid.leds[x][y] = m;
 	}
 	public void addLine(int x0, int y0, int x1, int y1) {//start color, end color
 
@@ -31,7 +36,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		int j = 0;
 		try {
 			for(i = 0; i <= maxDif; i++) {
-				at((x0 + (i * (x1 - x0) / maxDif)),(y0 + (i * (y1 - y0) / maxDif)), Color.WHITE);
+				addPoint((x0 + (i * (x1 - x0) / maxDif)),(y0 + (i * (y1 - y0) / maxDif)), Color.WHITE);
 				j=i;
 			}
 		} catch (ArithmeticException e) {
@@ -59,7 +64,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		int i;
 
 		for(i = 0; i <= maxDif; i++) {
-			at(		(x0 + i * (x1 - x0) / maxDif),
+			addPoint(		(x0 + i * (x1 - x0) / maxDif),
 					(y0 + i * (y1 - y0) / maxDif),
 					new Color(
 							c0.getRed()		+ i * (c1.getRed() 		- c0.getRed()	)	/maxDif,
@@ -74,10 +79,10 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		int j = 0;
 		try {
 			for(i = 0; i <= maxDif; i++) {
-				at((a.x + (i * (b.x - a.x) / maxDif)),(a.y + (i * (b.y - a.y) / maxDif)), new Color(
-						a.c.getRed()		+ i * (b.c.getRed() 		- a.c.getRed()	)	/maxDif,
-						a.c.getGreen() 	+ i * (b.c.getGreen() 	- a.c.getGreen()	)	/maxDif,
-						a.c.getBlue() 	+ i * (b.c.getBlue() 	- a.c.getBlue()	)	/maxDif));
+				addPoint((a.x + (i * (b.x - a.x) / maxDif)),(a.y + (i * (b.y - a.y) / maxDif)), new Color(
+						a.mark.getRed()		+ i * (b.mark.getRed() 		- a.mark.getRed()	)	/maxDif,
+						a.mark.getGreen() 	+ i * (b.mark.getGreen() 	- a.mark.getGreen()	)	/maxDif,
+						a.mark.getBlue() 	+ i * (b.mark.getBlue() 	- a.mark.getBlue()	)	/maxDif));
 				j=i;
 			}
 		} catch (ArithmeticException e) {
@@ -145,20 +150,20 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	 * @param c1 - Secondary color of the circle, changes gradually to the primary color, left to right, on the top half of the circle
 	 */
 	public void addCircle(double theta, double radius, double x, double y, Color c0, Color c1) {
-		theta = theta * Math.PI/180;
+		theta = theta * Math.PI/180; //convert from degrees to radians
 		for(double i = theta; i <= theta+(2*Math.PI); i += (2*Math.PI)/15000) {//Java calculates sine and cosine in radians, so I have to convert to degrees
 
 			int ledX = (int) Math.rint(x + radius * Math.cos(i)); //Find x coordinate and round to nearest int.
 			int ledY = (int) Math.rint(y + radius * Math.sin(i)); //Find y coordinate and round to nearest int.
 
 			if(i <= (theta + Math.PI)) {//First half of the circle
-				at(ledX, ledY, new Color(
+				addPoint(ledX, ledY, new Color(
 						(int)Math.rint(c0.getRed()		+ (i-theta) * (c1.getRed() 		- c0.getRed()	)	/(Math.PI)),
 						(int)Math.rint(c0.getGreen() 	+ (i-theta) * (c1.getGreen() 	- c0.getGreen()	)	/(Math.PI)),	//This half changes from color1 to color2
 						(int)Math.rint(c0.getBlue() 	+ (i-theta) * (c1.getBlue() 	- c0.getBlue()	)	/(Math.PI))));
 			}
 			else {		//second half
-				at(ledX,ledY, new Color(
+				addPoint(ledX,ledY, new Color(
 						(int)Math.rint(c1.getRed()		+ ((i-theta)-Math.PI) * (c0.getRed() 	- c1.getRed()	)	/(Math.PI)),
 						(int)Math.rint(c1.getGreen() 	+ ((i-theta)-Math.PI) * (c0.getGreen() 	- c1.getGreen()	)	/(Math.PI)),	//This half changes from color2 to color1
 						(int)Math.rint(c1.getBlue() 	+ ((i-theta)-Math.PI) * (c0.getBlue() 	- c1.getBlue()	)	/(Math.PI))));	
@@ -328,14 +333,23 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		//Selecting a random point
 			pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
 			pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
-			
-			for(int j = 0; j < iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
+			int marks = 0;
+			int mostPicked = 0;
+			Color cold = Color.RED;
+			Color warm = Color.YELLOW;
+			Color hot = Color.WHITE;
+			for(int j = 0; j <= iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
 				int vertIndex;
-				do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
-					vertIndex = rand.nextInt(numSides);
-				} while 
-					(!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) || !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
+				if (options.equal) 
+					do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
+						vertIndex = rand.nextInt(numSides);
+					} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) && !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //The magic that is Vertex restrictions
+				else 
+					do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
+						vertIndex = rand.nextInt(numSides);
+					} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) || !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
+
 //					((vertIndex == ((vertexBuffer  + 1) % numSides) |
 //					 vertIndex == ((vertexBuffer  + (numSides - 1)) % numSides) )&(
 //					 vertIndex == ((vertexBuffer2 + 1) % numSides) |
@@ -349,36 +363,81 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				//moving halfway to that vertex
 				pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
 				pencil.y = (chosenVert.y + pencil.y)/2;
+				
+				int timesPicked = at(pencil).getTimesPicked();
+		
+				//The Equation for getting the new color
+				//For new red value R, percentage p, starting color c2, ending color c1: R = (c1.R * p) + (c2 * (1-p))
+				double rate = 1-((timesPicked % 100)/100d);
+				int threshold = 100;
 
-//				pencil.c = grid.leds[pencil.x][pencil.y].brighter(); //instead of just making a new point, it brightens the point if there's already one there, this makes for more detailed fractals
-																	
-				int red = grid.leds[pencil.x][pencil.y].getRed();
-				int green = grid.leds[pencil.x][pencil.y].getGreen();
-				int blue = grid.leds[pencil.x][pencil.y].getBlue();
-				int rate = 30;
-				int threshold = 200;
-
-				if (
-						(grid.leds[pencil.x][pencil.y].getBlue() < threshold) & 
-						(grid.leds[pencil.x][pencil.y].getRed() == 0) & 
-						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
-					pencil.c = new Color(red ,green, blue + rate);
-				else if (
-//						(grid.leds[pencil.x][pencil.y].getBlue() > threshold) & 
-						(grid.leds[pencil.x][pencil.y].getRed() < (threshold)) & 
-						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
-					pencil.c = new Color(red + rate ,green, blue - rate);
-				else if (
-//						(grid.leds[pencil.x][pencil.y].getRed() > threshold) & 
-						(grid.leds[pencil.x][pencil.y].getGreen() < threshold))
-					pencil.c = new Color(red , green + rate, blue);
-				else if (grid.leds[pencil.x][pencil.y].getGreen() > threshold) 
-					pencil.c = pencil.c = grid.leds[pencil.x][pencil.y].brighter();
+				try {
+					 //A percentage that goes from 0% to 100% 3 times between 0 and 'number of iterations'
+					if (timesPicked < threshold ) {
+						pencil.mark = new Mark(
+								(int)Math.rint((Color.BLACK.getRed() * rate) + (cold.getRed())  * (1-rate)),
+								(int)Math.rint((Color.BLACK.getGreen() * rate) + (cold.getGreen())* (1-rate)),
+								(int)Math.rint((Color.BLACK.getBlue() * rate) + (cold.getBlue()) * (1-rate)),
+								pencil.mark.getAlpha(),
+								at(pencil).getTimesPicked() + 1);
+					}
+					else if (timesPicked >= threshold && timesPicked < threshold*2) {
+						pencil.mark = new Mark(
+								(int)Math.rint((cold.getRed() * rate) + (warm.getRed())  * (1-rate)),
+								(int)Math.rint((cold.getGreen() * rate) + (warm.getGreen())* (1-rate)),
+								(int)Math.rint((cold.getBlue() * rate) + (warm.getBlue()) * (1-rate)),
+								pencil.mark.getAlpha(),
+								at(pencil).getTimesPicked() + 1);
+					}
+					else if (timesPicked >= threshold*2 ) {//&& timesPicked < threshold*3
+						pencil.mark = new Mark(
+								(int)Math.rint((warm.getRed() * rate) + (hot.getRed())  * (1-rate)),
+								(int)Math.rint((warm.getGreen() * rate) + (hot.getGreen())* (1-rate)),
+								(int)Math.rint((warm.getBlue() * rate) + (hot.getBlue()) * (1-rate)),
+								pencil.mark.getAlpha(),
+								at(pencil).getTimesPicked() + 1);
+					}
+//					else pencil.mark = new Mark(at(pencil).brighter(), at(pencil).getTimesPicked() + 1);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+					System.out.println("finished iterations: " + j);
+					System.out.println("times picked: " + at(pencil).getTimesPicked());
+					System.exit(1);
+				}
+				
+//				int rate = 30;
+//				int threshold = 200;
+//				int red = grid.leds[pencil.x][pencil.y].getRed();
+//				int green = grid.leds[pencil.x][pencil.y].getGreen();
+//				int blue = grid.leds[pencil.x][pencil.y].getBlue();
+//				if (
+//						(grid.leds[pencil.x][pencil.y].getBlue() < threshold) && 
+//						(grid.leds[pencil.x][pencil.y].getRed() == 0) && 
+//						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
+//					pencil.mark = new Mark(red ,green, blue + rate);
+//				else if (
+////						(grid.leds[pencil.x][pencil.y].getBlue() > threshold) & 
+//						(grid.leds[pencil.x][pencil.y].getRed() < (threshold)) && 
+//						(grid.leds[pencil.x][pencil.y].getGreen() == 0))
+//					pencil.mark = new Mark(red + rate ,green, blue - rate);
+//				else if (
+////						(grid.leds[pencil.x][pencil.y].getRed() > threshold) & 
+//						(grid.leds[pencil.x][pencil.y].getGreen() < threshold))
+//					pencil.mark = new Mark(red , green + rate, blue);
+//				else if (grid.leds[pencil.x][pencil.y].getGreen() > threshold) 
+//					pencil.mark = new Mark(grid.leds[pencil.x][pencil.y].brighter());
 				
 				//Placing a point at that location
 				addPoint(pencil);
 				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' move it to the other side of the bracket to only see the complete drawing.
 			}
+			System.out.println("done");
+			for (Mark[] c1 : grid.leds) {
+				for (Mark c : c1) {
+					if (c.getTimesPicked() > mostPicked) mostPicked = c.getTimesPicked();
+				}
+			}
+			System.out.println("most picked: "+ mostPicked);
 
 		// ***************************** Old Vertex Restrictions ***************************************** //Kept for reference until presets are made
 //		if(iterations <= 0) iterations = 100000;
@@ -574,7 +633,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		if (restrictions.isOffset1Preference() && restrictions.isOffset2Preference()) {//Both offsets are selected, this is to make sure there isn't any conflict in the 'must be' rules
 			
 			if (restrictions.isOffset1True() && restrictions.isOffset2True()) {
-				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) && ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;
+				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) && ((vertex1 + restrictions.getOffset2Integer())%numSides != vertex0)) return false;//
 			}
 			else if (restrictions.isOffset1True() && !restrictions.isOffset2True()) {
 				if(((vertex1 + restrictions.getOffset1Integer())%numSides != vertex0) && ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
@@ -585,7 +644,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			else if (!restrictions.isOffset1True() && !restrictions.isOffset2True()) {
 				if(((vertex1 + restrictions.getOffset1Integer())%numSides == vertex0) || ((vertex1 + restrictions.getOffset2Integer())%numSides == vertex0)) return false;
 			}
-			
 			
 		}
 		else if (restrictions.isOffset1Preference() && !(restrictions.isOffset2Preference())) {//Only Offset1

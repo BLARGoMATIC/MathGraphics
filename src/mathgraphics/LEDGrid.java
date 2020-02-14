@@ -15,7 +15,7 @@ public class LEDGrid extends JPanel {
 	private int verticalLEDs;  // Grid size
 	private boolean showIncrement = false;
 	private int increment;
-	protected Color[][] leds;  // An array of arrays of Color. AKA a 2-dimensional field of colors or "LEDs"
+	protected Mark[][] leds;  // An array of arrays of Color. AKA a 2-dimensional field of colors or "LEDs"
     public LEDGrid(Dimension dimension) {
     	// The LED Grid requires at least one LED in each direction.
     	if( dimension.width < 1 ) { 
@@ -27,11 +27,11 @@ public class LEDGrid extends JPanel {
     	}
     	else verticalLEDs   = dimension.height;
     	// Color object creation patters for an array of arrays.
-    	leds = new Color[horizontalLEDs][verticalLEDs];
+    	leds = new Mark[horizontalLEDs][verticalLEDs];
     	int i, j;
     	for( i = 0; i < horizontalLEDs; i++ ) {
     		for( j = 0; j < verticalLEDs; j++ ) {
-    			leds[i][j] = new Color(0, 0, 0);
+    			leds[i][j] = new Mark(Color.BLACK);
     		}
     	}
     	setMinimumSize(dimension);

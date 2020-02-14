@@ -151,11 +151,11 @@ public class VertexRestrictionsPanel extends JPanel {
 		restrictions.setAdjacentPreference(!aButtonNP.isSelected());
 		restrictions.setAdjacentTrue(aButtonTrue.isSelected());
 
-			int offset = Integer.parseInt(o1TextField.getText());
-			if(offset != 0) {
+			int offset1 = Integer.parseInt(o1TextField.getText());
+			if(offset1 != 0) {
 				restrictions.setOffset1Preference(true);
 				restrictions.setOffset1True(o1ButtonTrue.isSelected());
-				restrictions.setOffset1Integer(offset);
+				restrictions.setOffset1Integer(offset1);
 			}
 			else {
 				restrictions.setOffset1Preference(false);
@@ -165,7 +165,7 @@ public class VertexRestrictionsPanel extends JPanel {
 			if(offset2 != 0) {
 				restrictions.setOffset2Preference(true);
 				restrictions.setOffset2True(o2ButtonTrue.isSelected());
-				restrictions.setOffset2Integer(offset);
+				restrictions.setOffset2Integer(offset2);
 			}
 			else {
 				restrictions.setOffset2Preference(false);

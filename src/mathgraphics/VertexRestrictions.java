@@ -13,6 +13,28 @@ public class VertexRestrictions {
 	private int offset1Integer;
 	private int offset2Integer;
 	
+	public VertexRestrictions() {
+		
+	}
+	
+	/** For use when manually creating presets
+	 * @param bools
+	 * @param offsets
+	 */
+	public VertexRestrictions(boolean[] bools, int[] offsets) {
+		equivalencePreference 	= bools[0];
+		equivalenceTrue			= bools[1];
+		adjacentPreference		= bools[2];
+		adjacentTrue 			= bools[3];
+		offset1Preference 		= bools[4];
+		offset1True 			= bools[5];
+		offset2Preference 		= bools[6];
+		offset2True 			= bools[7];
+		
+		offset1Integer = offsets[0];
+		offset2Integer = offsets[1];
+	}
+	
 	//Methods
 	
 	public boolean isEquivalencePreference() {

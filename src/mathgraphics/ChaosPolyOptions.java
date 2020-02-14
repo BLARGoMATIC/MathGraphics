@@ -5,11 +5,15 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class ChaosPolyOptions extends OptionPanel {
 
@@ -22,12 +26,20 @@ public class ChaosPolyOptions extends OptionPanel {
 	private JTextField sidesField;
 	private VertexRestrictionsPanel v1Panel;
 	private VertexRestrictionsPanel v2Panel;
+	private JPanel sidesPanel;
+	private JLabel sidesLabel;
+	private JPanel iterationsPanel;
+	private JLabel iterationsLabel;
+	private JPanel equalPanel;
+	private JRadioButton andButton;
+	private JRadioButton orButton;
+	private ButtonGroup equalBGroup;
 	
 	public ChaosPolyOptions() {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-		JPanel sidesPanel = new JPanel();
-		JLabel sidesLabel = new JLabel("# of Sides");
+		sidesPanel = new JPanel();
+		sidesLabel = new JLabel("# of Sides");
 		sidesPanel.setLayout(new BoxLayout(sidesPanel, BoxLayout.LINE_AXIS));
 		sidesLabel.setAlignmentY(CENTER_ALIGNMENT);
 		sidesField = new JTextField();
@@ -55,15 +67,15 @@ public class ChaosPolyOptions extends OptionPanel {
 				//nothing
 			}
 		});
-		JPanel iterationsPanel = new JPanel();
-		JLabel iterationsLabel = new JLabel("# of Iterations");
+		iterationsPanel = new JPanel();
+		iterationsLabel = new JLabel("# of Iterations");
 		iterationsPanel.setLayout(new BoxLayout(iterationsPanel, BoxLayout.LINE_AXIS));
 		iterationsLabel.setAlignmentY(CENTER_ALIGNMENT);
 		iterationsField = new JTextField();
 		iterationsField.setAlignmentX(RIGHT_ALIGNMENT);
 		iterationsField.setPreferredSize(new Dimension(80,20));
 		iterationsField.setMaximumSize(new Dimension(150, 20));
-		iterationsField.setText("1000000");
+		iterationsField.setText("10000000");
 		iterationsPanel.add(iterationsLabel);
 		minSize = new Dimension(20, 20);
 		prefSize = new Dimension(20, 20);
@@ -87,14 +99,30 @@ public class ChaosPolyOptions extends OptionPanel {
 		v1Panel = new VertexRestrictionsPanel("V\u2081");//v1 options
 		v2Panel = new VertexRestrictionsPanel("V\u2082");//v2 options
 		
+		equalPanel = new JPanel();
+		equalPanel.setLayout(new BoxLayout(equalPanel, BoxLayout.LINE_AXIS));
+		andButton = new JRadioButton("And");
+		orButton = new JRadioButton("Or");
+		equalBGroup = new ButtonGroup();
+		equalBGroup.add(andButton);
+		equalBGroup.add(orButton);
+		equalPanel.add(Box.createHorizontalGlue());
+		equalPanel.add(andButton);
+		equalPanel.add(Box.createRigidArea(new Dimension(5,0)));
+		equalPanel.add(orButton);
+		equalPanel.add(Box.createRigidArea(new Dimension(10,0)));
+		
 		add(sidesPanel);
 		add(iterationsPanel);
-		add(Box.createRigidArea(new Dimension(0,10)));
+
 		add(v1Panel);
+		add(Box.createRigidArea(new Dimension(0,5)));
+		add(equalPanel);
 		add(v2Panel);
 		setVisible(true);
 	}
 	
+	@Deprecated
 	public int[] getArgs() {
 		return new int[] {
 				Integer.parseInt(iterationsField.getText()),
@@ -112,6 +140,7 @@ public class ChaosPolyOptions extends OptionPanel {
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
+		options.equal = andButton.isSelected();
 		options.args = new int[] {
 				Integer.parseInt(sidesField.getText()),
 				Integer.parseInt(iterationsField.getText())};

@@ -8,14 +8,18 @@ import java.awt.Color;
  */
 public class Coordinates {
 	public int x, y;
-	public Color c;
+	public Mark mark;
 	public Coordinates(int x, int y) {
 		this.x = x;
 		this.y = y;
-		c = Color.WHITE;
+		mark = new Mark(Color.WHITE);
 	}
 	public Coordinates(int x, int y, Color c) {
 		this(x, y);
-		this.c = c;
+		this.mark = new Mark(c);
+	}
+	public Coordinates(int x, int y, Mark m) {
+		this(x, y);
+		this.mark = m;
 	}
 }

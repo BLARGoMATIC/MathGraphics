@@ -3,6 +3,8 @@ package mathgraphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
@@ -19,10 +21,6 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 	int[] args;
 	
 	private JFrame frame;
-	/**
-	 * Array of VertexRestrictions, each represents a set a restrictions for choosing a vertex relative to past chosen vertices.
-	 */
-	private VertexRestrictions[] restrictions;
 	/**
 	 * 
 	 */
