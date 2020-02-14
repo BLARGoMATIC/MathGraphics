@@ -302,8 +302,12 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	public void chaosPolygon(Options options) {
 		int numSides = options.args[0];
 		int iterations = options.args[1];
+		Color cold = options.colors[0];
+		Color warm = options.colors[1];;
+		Color hot = options.colors[2];;
 		VertexRestrictions[] restrictions = options.restrictions;
 		Coordinates[] vertex = new Coordinates[numSides];
+		
 		
 		//		*************** Math for a regular pentagon ******************
 		//Adjusting the rotational offset of the polygon so it's symmetrical along the vertical axis
@@ -335,9 +339,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
 			int marks = 0;
 			int mostPicked = 0;
-			Color cold = Color.RED;
-			Color warm = Color.YELLOW;
-			Color hot = Color.WHITE;
 			for(int j = 0; j <= iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
 				int vertIndex;

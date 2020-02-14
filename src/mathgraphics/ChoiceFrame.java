@@ -15,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -51,6 +52,11 @@ public class ChoiceFrame {
 	/** 
 	 */
 	public ChoiceFrame() {
+		try { 
+		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
 		mainFrame = new JFrame();
 		designOptionsPanel = new JPanel();
 		designComboBoxPanel = new JPanel();
@@ -74,6 +80,7 @@ public class ChoiceFrame {
 		
 		//Setting up the Frame and adding the panels
 		mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.PAGE_AXIS));
+//		mainFrame.setMaximumSize(new Dimension(200,500));
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		mainFrame.setLocation(screen.width/2-mainFrame.getSize().width/2+100, screen.height/2-mainFrame.getSize().height/2-250);
 		

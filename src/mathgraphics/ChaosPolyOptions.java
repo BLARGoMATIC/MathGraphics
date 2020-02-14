@@ -1,19 +1,18 @@
 package mathgraphics;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 public class ChaosPolyOptions extends OptionPanel {
 
@@ -22,22 +21,33 @@ public class ChaosPolyOptions extends OptionPanel {
 	 */
 	private static final long serialVersionUID = 2462036980524333807L;
 	
-	private JTextField iterationsField;
-	private JTextField sidesField;
-	private VertexRestrictionsPanel v1Panel;
-	private VertexRestrictionsPanel v2Panel;
+
 	private JPanel sidesPanel;
 	private JLabel sidesLabel;
 	private JPanel iterationsPanel;
 	private JLabel iterationsLabel;
+	private JTextField iterationsField;
+	private JTextField sidesField;
+	private VertexRestrictionsPanel v1Panel;
+	private VertexRestrictionsPanel v2Panel;
 	private JPanel equalPanel;
 	private JRadioButton andButton;
 	private JRadioButton orButton;
 	private ButtonGroup equalBGroup;
+	private JPanel colorPanel;
+	JPanel cLabelPanel;
+	JPanel cBoxPanel;
+	private JLabel coldLabel;
+	private JLabel warmLabel;
+	private JLabel hotLabel;
+	private JComboBox<String> coldColorBox;
+	private JComboBox<String> warmColorBox;
+	private JComboBox<String> hotColorBox;
 	
 	public ChaosPolyOptions() {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
+		
+		//numSides Panel
 		sidesPanel = new JPanel();
 		sidesLabel = new JLabel("# of Sides");
 		sidesPanel.setLayout(new BoxLayout(sidesPanel, BoxLayout.LINE_AXIS));
@@ -54,7 +64,7 @@ public class ChaosPolyOptions extends OptionPanel {
 		sidesPanel.add(new Box.Filler(minSize, prefSize, maxSize));
 		sidesPanel.add(Box.createHorizontalGlue());
 		sidesPanel.add(sidesField);
-		sidesPanel.add(Box.createRigidArea(new Dimension(10,0)));
+		sidesPanel.add(Box.createRigidArea(new Dimension(11,0)));
 		sidesField.addFocusListener(new FocusListener() {
 
 			@Override
@@ -67,20 +77,22 @@ public class ChaosPolyOptions extends OptionPanel {
 				//nothing
 			}
 		});
+		
+		//Iterations Panel
 		iterationsPanel = new JPanel();
 		iterationsLabel = new JLabel("# of Iterations");
 		iterationsPanel.setLayout(new BoxLayout(iterationsPanel, BoxLayout.LINE_AXIS));
 		iterationsLabel.setAlignmentY(CENTER_ALIGNMENT);
 		iterationsField = new JTextField();
 		iterationsField.setAlignmentX(RIGHT_ALIGNMENT);
-		iterationsField.setPreferredSize(new Dimension(80,20));
-		iterationsField.setMaximumSize(new Dimension(150, 20));
+		iterationsField.setPreferredSize(new Dimension(78,20));
+		iterationsField.setMaximumSize(new Dimension(140, 20));
 		iterationsField.setText("10000000");
 		iterationsPanel.add(iterationsLabel);
-		minSize = new Dimension(20, 20);
-		prefSize = new Dimension(20, 20);
-		maxSize = new Dimension(20, 20);
-		iterationsPanel.add(new Box.Filler(minSize, prefSize, maxSize));
+//		minSize = new Dimension(20, 20);
+//		prefSize = new Dimension(20, 20);
+//		maxSize = new Dimension(20, 20);
+//		iterationsPanel.add(new Box.Filler(minSize, prefSize, maxSize));
 		iterationsPanel.add(Box.createHorizontalGlue());
 		iterationsPanel.add(iterationsField);
 		iterationsPanel.add(Box.createRigidArea(new Dimension(10,0)));
@@ -96,6 +108,37 @@ public class ChaosPolyOptions extends OptionPanel {
 				//nothing
 			}
 		});
+		
+		//ColorBox Panel
+		colorPanel = new JPanel();
+		cLabelPanel = new JPanel();
+		cBoxPanel = new JPanel();
+		colorPanel.setLayout(new BoxLayout(colorPanel, BoxLayout.LINE_AXIS));
+		cLabelPanel.setLayout(new BoxLayout(cLabelPanel, BoxLayout.PAGE_AXIS));
+		cBoxPanel.setLayout(new BoxLayout(cBoxPanel, BoxLayout.PAGE_AXIS));
+		coldColorBox = new JComboBox<>(COLOR_STRINGS);
+		warmColorBox = new JComboBox<>(COLOR_STRINGS);
+		hotColorBox = new JComboBox<>(COLOR_STRINGS);
+		coldColorBox.setSelectedIndex(2);
+		warmColorBox.setSelectedIndex(0);
+		hotColorBox.setSelectedIndex(5);
+		coldLabel = new JLabel("Cold Color");
+		warmLabel = new JLabel("Warm Color");
+		hotLabel = new JLabel("Hot Color");
+		cLabelPanel.add(coldLabel);
+		cLabelPanel.add(Box.createRigidArea(new Dimension(0,5)));
+		cLabelPanel.add(warmLabel);
+		cLabelPanel.add(Box.createRigidArea(new Dimension(0,5)));
+		cLabelPanel.add(hotLabel);
+		cBoxPanel.add(coldColorBox);
+		cBoxPanel.add(warmColorBox);
+		cBoxPanel.add(hotColorBox);
+		colorPanel.add(cLabelPanel);
+		colorPanel.add(Box.createRigidArea(new Dimension(50,0)));
+		colorPanel.add(cBoxPanel);
+		colorPanel.add(Box.createRigidArea(new Dimension(11,0)));
+		
+		//Vertex Restriction Panels
 		v1Panel = new VertexRestrictionsPanel("V\u2081");//v1 options
 		v2Panel = new VertexRestrictionsPanel("V\u2082");//v2 options
 		
@@ -103,6 +146,7 @@ public class ChaosPolyOptions extends OptionPanel {
 		equalPanel.setLayout(new BoxLayout(equalPanel, BoxLayout.LINE_AXIS));
 		andButton = new JRadioButton("And");
 		orButton = new JRadioButton("Or");
+		orButton.setSelected(true);
 		equalBGroup = new ButtonGroup();
 		equalBGroup.add(andButton);
 		equalBGroup.add(orButton);
@@ -110,11 +154,11 @@ public class ChaosPolyOptions extends OptionPanel {
 		equalPanel.add(andButton);
 		equalPanel.add(Box.createRigidArea(new Dimension(5,0)));
 		equalPanel.add(orButton);
-		equalPanel.add(Box.createRigidArea(new Dimension(10,0)));
+		equalPanel.add(Box.createRigidArea(new Dimension(11,0)));
 		
 		add(sidesPanel);
 		add(iterationsPanel);
-
+		add(colorPanel);
 		add(v1Panel);
 		add(Box.createRigidArea(new Dimension(0,5)));
 		add(equalPanel);
@@ -141,6 +185,11 @@ public class ChaosPolyOptions extends OptionPanel {
 	public Options getOptions() {
 		Options options = super.getOptions();
 		options.equal = andButton.isSelected();
+		options.colors = new Color[] { 			//While the color comboBoxes are type String, the COLOR[] field supplied by Options.class has identical index values
+				COLORS[coldColorBox.getSelectedIndex()],
+				COLORS[warmColorBox.getSelectedIndex()],
+				COLORS[hotColorBox.getSelectedIndex()]
+		};
 		options.args = new int[] {
 				Integer.parseInt(sidesField.getText()),
 				Integer.parseInt(iterationsField.getText())};

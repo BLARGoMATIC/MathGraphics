@@ -1,5 +1,6 @@
 package mathgraphics;
 
+import java.awt.Color;
 import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
@@ -11,16 +12,29 @@ public abstract class OptionPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -892834822827996414L;
-	protected static final String[] COLOR_STRINGS = {			
-			"Choose a Color", //0
-			"White",
-			"Black",
+	protected static final String[] COLOR_STRINGS = {
 			"Red",
 			"Green",
 			"Blue",
-			"Purple",
-			"Orange",
+			"Magenta",
+			"Cyan",
 			"Yellow",
+			"Orange",
+			"Pink",
+			"White",
+			"Black",
+	};
+	protected static final Color[] COLORS = {			
+			Color.RED,
+			Color.GREEN,
+			Color.BLUE,
+			Color.MAGENTA,
+			Color.CYAN,
+			Color.YELLOW,
+			Color.ORANGE,
+			Color.PINK,
+			Color.WHITE,
+			Color.BLACK,
 	};
 	//End Members
 	

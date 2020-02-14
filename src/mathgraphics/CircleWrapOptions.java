@@ -1,5 +1,6 @@
 package mathgraphics;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -19,8 +20,8 @@ public class CircleWrapOptions extends OptionPanel {
 	private static final long serialVersionUID = -1728404424435183577L;
 	
 	JTextField sizeField;
-	JComboBox<String> colorBox1;
-	JComboBox<String> colorBox2;
+	JComboBox<Color> colorBox1;
+	JComboBox<Color> colorBox2;
 	JCheckBox showIncrement;
 	JLabel sizeLabel;
 	
@@ -45,10 +46,10 @@ public class CircleWrapOptions extends OptionPanel {
 			
 		});
 		
-		colorBox1 = new JComboBox<String>(COLOR_STRINGS);
+		colorBox1 = new JComboBox<>(COLORS);
 		colorBox1.setSelectedIndex(0);
 		
-		colorBox2 = new JComboBox<String>(COLOR_STRINGS);
+		colorBox2 = new JComboBox<>(COLORS);
 		colorBox2.setSelectedIndex(0);
 		
 		showIncrement = new JCheckBox("Show Increment?");
