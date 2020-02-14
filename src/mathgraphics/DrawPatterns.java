@@ -337,7 +337,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		//Selecting a random point
 			pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
 			pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
-			int marks = 0;
 			int mostPicked = 0;
 			for(int j = 0; j <= iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
