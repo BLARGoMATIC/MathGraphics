@@ -22,6 +22,6 @@ Offset - Similar to Adjacency but a custom number of 'hops' over instead of just
 ![Example-Picture2](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Hexagon%20Star.png?raw=true)
 ![Example-Picture3](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Pentagon.png?raw=true)
 ![Example-Picture4](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Octogon%20Star.png?raw=true)
-![Example-Picture4](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Hexagon.png?raw=true)
+![Example-Picture4](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Red%20and%20White%20hexagonal%20star.png?raw=true)
 
 ... and many more
