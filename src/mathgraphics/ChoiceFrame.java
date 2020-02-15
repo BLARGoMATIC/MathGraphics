@@ -80,7 +80,6 @@ public class ChoiceFrame {
 		
 		//Setting up the Frame and adding the panels
 		mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.PAGE_AXIS));
-//		mainFrame.setMaximumSize(new Dimension(200,500));
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		mainFrame.setLocation(screen.width/2-mainFrame.getSize().width/2+100, screen.height/2-mainFrame.getSize().height/2-250);
 		
@@ -99,13 +98,15 @@ public class ChoiceFrame {
 		mainFrame.add(buttonPanel);
 		
 		//Action Listeners
-
+		
+		//When the ChoiceBox is changed
 		choiceBox.addActionListener(e -> { //when the selection changes, so does the available designOptionsPanel, since each Drawing has different arguments
 				designOptionsPanel.removeAll(); //Remove everything, if anything is there, just a precaution to avoid choices for a different design from showing up.
 				designOptionsPanel.add((JPanel)choiceBox.getSelectedItem());
 				mainFrame.validate();
 				mainFrame.pack();
 			});
+		//Draw the selected design with the selected options
 		drawButton.addActionListener(e -> { //Changes when
 				if (drawFrame != null) drawFrame.dispose();
 				try {
@@ -127,6 +128,7 @@ public class ChoiceFrame {
 					e3.printStackTrace();
 				}
 		});
+		//"I like this design, I want to save it as a picture"
 		exportButton.addActionListener(e -> {
 			String fileSeparator = System.getProperty("file.separator");
 			File saveDirectory = new File(System.getProperty("user.home") + fileSeparator + "Pictures" + fileSeparator + "Chaos Game");	//Pathname to where we want to save a picture
