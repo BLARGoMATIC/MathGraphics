@@ -47,9 +47,12 @@ White -> Cyan -> Blue, 10000000 iterations
 v1 Equal = NP, Adjacent = NP, offset 1 (N) = 4, offset 1 (N) = 2  
 or  
 v2 Equal = NP, Adjacent = N, offset 1 (N) = 0, offset 2 (N) = 0  
-### Rogue Chaos Square
+### Unnamed Chaos Square
 ![Chaos Square](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Chaos%20Square.png?raw=true)  
-I seem to have lost this one. However I know that the and/or value is 'and' as well as one of v1's offsets being 1
+Red -> Orange -> Yellow, ~15000000 iterations  
+v1 Equal = N, Adjacent = NP, offset 1 (N) = 1, offset 1 (N) = 0  
+or  
+v2 Equal = N, Adjacent = NP, offset 1 (N) = 1, offset 2 (N) = 0  
 ### Hexagonal Twisted Star
 ![Hexagonal Twisted Star](https://github.com/BLARGoMATIC/MathGraphics/blob/master/Pictures/Red%20and%20White%20hexagonal%20star.png?raw=true)  
 Red -> Orange -> Yellow, 15000000 iterations  
