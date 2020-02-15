@@ -57,5 +57,5 @@ v1 Equal = NP, Adjacent = NP, offset 1 (N) = 4, offset 1 (N) = 0
 or  
 v2 Equal = NP, Adjacent = NP, offset 1 (N) = 1, offset 2 (N) = 0  
 
-... and many more
-another tip, in dealing with lots of false values, 'and' works like 'or' and vice-versa.
+and many more...  
+another tip: in dealing with lots of false values, 'and' works like 'or' and vice-versa.
