@@ -363,36 +363,36 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		
 				//The Equation for getting the new color
 				//For new red value R, percentage p, starting color c2, ending color c1: R = (c1.R * p) + (c2 * (1-p))
-				double rate = 1-((timesPicked % 100)/100d);
+				double rate = (timesPicked % 100)/100d;
 				int threshold = 100;
 
 				try {
 					 //A percentage that goes from 0% to 100% 3 times between 0 and 'number of iterations'
 					if (timesPicked < threshold ) {
 						pencil.mark = new Mark(
-								(int)Math.rint((Color.BLACK.getRed() * rate) + (cold.getRed())  * (1-rate)),
-								(int)Math.rint((Color.BLACK.getGreen() * rate) + (cold.getGreen())* (1-rate)),
-								(int)Math.rint((Color.BLACK.getBlue() * rate) + (cold.getBlue()) * (1-rate)),
+								(int)Math.rint((cold.getRed() * rate) + (Color.BLACK.getRed())  * (1-rate)),
+								(int)Math.rint((cold.getGreen() * rate) + (Color.BLACK.getGreen())* (1-rate)),
+								(int)Math.rint((cold.getBlue() * rate) + (Color.BLACK.getBlue()) * (1-rate)),
 								pencil.mark.getAlpha(),
 								at(pencil).getTimesPicked() + 1);
 					}
 					else if (timesPicked >= threshold && timesPicked < threshold*2) {
 						pencil.mark = new Mark(
-								(int)Math.rint((cold.getRed() * rate) + (warm.getRed())  * (1-rate)),
-								(int)Math.rint((cold.getGreen() * rate) + (warm.getGreen())* (1-rate)),
-								(int)Math.rint((cold.getBlue() * rate) + (warm.getBlue()) * (1-rate)),
+								(int)Math.rint((warm.getRed() * rate) + (cold.getRed())  * (1-rate)),
+								(int)Math.rint((warm.getGreen() * rate) + (cold.getGreen())* (1-rate)),
+								(int)Math.rint((warm.getBlue() * rate) + (cold.getBlue()) * (1-rate)),
 								pencil.mark.getAlpha(),
 								at(pencil).getTimesPicked() + 1);
 					}
 					else if (timesPicked >= threshold*2 && timesPicked < threshold*3) {//&& timesPicked < threshold*3
 						pencil.mark = new Mark(
-								(int)Math.rint((warm.getRed() * rate) + (hot.getRed())  * (1-rate)),
-								(int)Math.rint((warm.getGreen() * rate) + (hot.getGreen())* (1-rate)),
-								(int)Math.rint((warm.getBlue() * rate) + (hot.getBlue()) * (1-rate)),
+								(int)Math.rint((hot.getRed() * rate) + (warm.getRed())  * (1-rate)),
+								(int)Math.rint((hot.getGreen() * rate) + (warm.getGreen())* (1-rate)),
+								(int)Math.rint((hot.getBlue() * rate) + (warm.getBlue()) * (1-rate)),
 								pencil.mark.getAlpha(),
 								at(pencil).getTimesPicked() + 1);
 					}
-					else pencil.mark = new Mark(at(pencil).brighter(),
+					else pencil.mark = new Mark(hot,
 							at(pencil).getTimesPicked() + 1);
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
