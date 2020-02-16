@@ -2,8 +2,6 @@ package mathgraphics;
 
 import java.awt.Color;
 import java.security.SecureRandom;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class DrawPatterns { //TODO clean up methods, it's kind of messy at the moment.
 
@@ -322,104 +320,87 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		for(int k = 0; k < vertex.length; k++) {
 			vertex[k] = new Coordinates((int)Math.rint(((2f * numSides / 5)*grid.getHorizontalLEDs()/numSides)*Math.cos(i))+grid.getHorizontalLEDs()/(2), 
-					(int)Math.rint(((2f * numSides / 5)*grid.getVerticalLEDs()/numSides)*Math.sin(i))+grid.getVerticalLEDs()/(2));
+										(int)Math.rint(((2f * numSides / 5)*grid.getVerticalLEDs()/numSides)*Math.sin(i))+grid.getVerticalLEDs()/(2));
 			i += 2*Math.PI/numSides;
 		}
+		
+//		//drawing the polygon TODO Make this a Toggle-able option
+//		for (int k = 0; k <= (numSides-1); ++k) {
+//			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
+//		}
+		
+		Coordinates pencil = new Coordinates(grid.getHorizontalLEDs()/2, grid.getHorizontalLEDs()/2);
+		Coordinates chosenVert; //once a vertex has been chosen, it's set here.
+		int vertexBuffer = 0; //Buffer for Chaos restrictions
+		int vertexBuffer2 = 0;
 
-		//		//drawing the polygon TODO Make this a Toggle-able option
-		//		for (int k = 0; k <= (numSides-1); ++k) {
-		//			addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
-		//		}
+		//Selecting a random point
+			pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
+			pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
+			int mostPicked = 0;
+			for(int j = 0; j <= iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
 
+				int vertIndex;
+				if (options.equal) 
+					do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
+						vertIndex = rand.nextInt(numSides);
+					} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) && !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //The magic that is Vertex restrictions
+				else 
+					do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
+						vertIndex = rand.nextInt(numSides);
+					} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) || !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
 
-		int numberOfTasks = 10;
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		try { 
-			for(int k = 0 ; k <= numberOfTasks; k++) {
-				executor.execute(new Runnable() {
-					@Override
-					public void run() {
-						int vertexBuffer = 0; //Buffer for Chaos restrictions
-						int vertexBuffer2 = 0;
-						Coordinates pencil = new Coordinates(grid.getHorizontalLEDs()/2, grid.getHorizontalLEDs()/2);
-						Coordinates chosenVert; //once a vertex has been chosen, it's set here.
+				chosenVert = vertex[vertIndex];
 
+				vertexBuffer2 = vertexBuffer;
+				vertexBuffer = vertIndex; //Set vertex buffers for next iteration
 
-						//Selecting a random point
-						pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
-						pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
+				//moving halfway to that vertex
+				pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
+				pencil.y = (chosenVert.y + pencil.y)/2;
+				
+				int timesPicked = at(pencil).getTimesPicked();
+		
+				//The Equation for getting the new color
+				//For new red value R, percentage p, starting color c2, ending color c1: R = (c1.R * p) + (c2 * (1-p))
+				double rate = 1-((timesPicked % 100)/100d);
+				int threshold = 100;
 
-						for(int j = 0; j <= iterations/numberOfTasks; j++) { //Number of dots to draw, more dots for a clearer fractal
-
-							int vertIndex;
-							if (options.equal) 
-								do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
-									vertIndex = rand.nextInt(numSides);
-								} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) && !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //The magic that is Vertex restrictions
-							else 
-								do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions
-									vertIndex = rand.nextInt(numSides);
-								} while (!vertexValidation(vertIndex, vertexBuffer, numSides, restrictions[0]) || !vertexValidation(vertIndex, vertexBuffer2, numSides, restrictions[1])); //Magic
-
-							chosenVert = vertex[vertIndex];
-
-							vertexBuffer2 = vertexBuffer;
-							vertexBuffer = vertIndex; //Set vertex buffers for next iteration
-
-							//moving halfway to that vertex
-							pencil.x = (chosenVert.x + pencil.x)/2; //TODO add argument to change distance to next vertex
-							pencil.y = (chosenVert.y + pencil.y)/2;
-
-							int timesPicked = at(pencil).getTimesPicked();
-
-							//The Equation for getting the new color
-							//For new red value R, percentage p, starting color c2, ending color c1: R = (c1.R * p) + (c2 * (1-p))
-							double rate = 1-((timesPicked % 100)/100d);
-							int threshold = 100;
-
-							try {
-								//A percentage that goes from 0% to 100% 3 times between 0 and 'number of iterations'
-								if (timesPicked < threshold ) {
-									pencil.mark = new Mark(
-											(int)Math.rint((Color.BLACK.getRed() * rate) + (cold.getRed())  * (1-rate)),
-											(int)Math.rint((Color.BLACK.getGreen() * rate) + (cold.getGreen())* (1-rate)),
-											(int)Math.rint((Color.BLACK.getBlue() * rate) + (cold.getBlue()) * (1-rate)),
-											pencil.mark.getAlpha(),
-											at(pencil).getTimesPicked() + 1);
-								}
-								else if (timesPicked >= threshold && timesPicked < threshold*2) {
-									pencil.mark = new Mark(
-											(int)Math.rint((cold.getRed() * rate) + (warm.getRed())  * (1-rate)),
-											(int)Math.rint((cold.getGreen() * rate) + (warm.getGreen())* (1-rate)),
-											(int)Math.rint((cold.getBlue() * rate) + (warm.getBlue()) * (1-rate)),
-											pencil.mark.getAlpha(),
-											at(pencil).getTimesPicked() + 1);
-								}
-								else if (timesPicked >= threshold*2 && timesPicked < threshold*3) {//&& timesPicked < threshold*3
-									pencil.mark = new Mark(
-											(int)Math.rint((warm.getRed() * rate) + (hot.getRed())  * (1-rate)),
-											(int)Math.rint((warm.getGreen() * rate) + (hot.getGreen())* (1-rate)),
-											(int)Math.rint((warm.getBlue() * rate) + (hot.getBlue()) * (1-rate)),
-											pencil.mark.getAlpha(),
-											at(pencil).getTimesPicked() + 1);
-								}
-								else pencil.mark = new Mark(at(pencil).brighter(),
-										at(pencil).getTimesPicked() + 1);
-							} catch (IllegalArgumentException e) {
-								e.printStackTrace();
-							}
-							//Placing a point at that location
-							addPoint(pencil);
-							grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' move it to the other side of the bracket to only see the complete drawing.
-							
-						}
+				try {
+					 //A percentage that goes from 0% to 100% 3 times between 0 and 'number of iterations'
+					if (timesPicked < threshold ) {
+						pencil.mark = new Mark(
+								(int)Math.rint((Color.BLACK.getRed() * rate) + (cold.getRed())  * (1-rate)),
+								(int)Math.rint((Color.BLACK.getGreen() * rate) + (cold.getGreen())* (1-rate)),
+								(int)Math.rint((Color.BLACK.getBlue() * rate) + (cold.getBlue()) * (1-rate)),
+								pencil.mark.getAlpha(),
+								at(pencil).getTimesPicked() + 1);
 					}
-				});
+					else if (timesPicked >= threshold && timesPicked < threshold*2) {
+						pencil.mark = new Mark(
+								(int)Math.rint((cold.getRed() * rate) + (warm.getRed())  * (1-rate)),
+								(int)Math.rint((cold.getGreen() * rate) + (warm.getGreen())* (1-rate)),
+								(int)Math.rint((cold.getBlue() * rate) + (warm.getBlue()) * (1-rate)),
+								pencil.mark.getAlpha(),
+								at(pencil).getTimesPicked() + 1);
+					}
+					else if (timesPicked >= threshold*2 && timesPicked < threshold*3) {//&& timesPicked < threshold*3
+						pencil.mark = new Mark(
+								(int)Math.rint((warm.getRed() * rate) + (hot.getRed())  * (1-rate)),
+								(int)Math.rint((warm.getGreen() * rate) + (hot.getGreen())* (1-rate)),
+								(int)Math.rint((warm.getBlue() * rate) + (hot.getBlue()) * (1-rate)),
+								pencil.mark.getAlpha(),
+								at(pencil).getTimesPicked() + 1);
+					}
+					else pencil.mark = new Mark(at(pencil).brighter(),
+							at(pencil).getTimesPicked() + 1);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
+				//Placing a point at that location
+				addPoint(pencil);
+				grid.repaint(); //Refreshing the drawing, to make kind of an 'animation' move it to the other side of the bracket to only see the complete drawing.
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		executor.shutdown();
 
 	}
 	/** Returns true if the supplied vertex passes all tests supplied by the supplied VertexRestrictions, returns false otherwise.
