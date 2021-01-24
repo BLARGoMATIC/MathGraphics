@@ -39,7 +39,7 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 		this.options = options;
 		frame = new JFrame(options.name);
 		grid = new LEDGrid(new Dimension(800,800));
-		dp = new DrawPatterns(grid);
+		dp = new DrawPatterns(grid, options);
 		frame.add(grid);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(800+16,800+39));
@@ -125,6 +125,7 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 	
 	public void dispose() {
 		frame.dispose();
+		dp.dispose();
 	}
 
 }
