@@ -13,8 +13,10 @@ import javax.swing.JPanel;
 public class LEDGrid extends JPanel { 
 	private int horizontalLEDs;
 	private int verticalLEDs;  // Grid size
-	private boolean showIncrement = false;
+	private boolean showIncrement = true;
 	private int increment;
+	private boolean isComplete = false;
+	
 	protected Mark[][] leds;  // An array of arrays of Color. AKA a 2-dimensional field of colors or "LEDs"
     public LEDGrid(Dimension dimension) {
     	// The LED Grid requires at least one LED in each direction.
@@ -74,6 +76,16 @@ public class LEDGrid extends JPanel {
     	g.setColor(Color.WHITE);
     	g.drawString(getIncrement(),5,15);
     }
+    public void setIsComplete(boolean isComplete) {
+		this.isComplete = isComplete;
+	}
+    public void drawComplete(Graphics g) {
+    	this.setShowIncrement(false);
+    	g.setColor(Color.BLACK);
+    	g.fillRect(0, 0, 10, 20);
+    	g.setColor(Color.WHITE);
+    	g.drawString("Done",5,15);
+    }
     @Override
     public void paintComponent(Graphics g)
     {
@@ -90,5 +102,6 @@ public class LEDGrid extends JPanel {
     		i++;
     	}
     	if(showIncrement) drawIncrement(g);
+    	if(isComplete) drawComplete(g);
     }
 }
