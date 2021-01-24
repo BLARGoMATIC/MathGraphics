@@ -6,18 +6,8 @@ import java.security.SecureRandom;
 public class DrawPatterns { //TODO clean up methods, it's kind of messy at the moment.
 
 	private LEDGrid grid;
-	private SecureRandom rand;
-	private boolean shouldQuit;
-	
-	public boolean isShouldQuit() {
-		return shouldQuit;
-	}
-	public void setShouldQuit(boolean shouldQuit) {
-		this.shouldQuit = shouldQuit;
-	}
+	private SecureRandom rand = new SecureRandom();
 	public DrawPatterns(LEDGrid grid) {
-		rand = new SecureRandom();
-		shouldQuit = false;
 		this.grid = grid;
 	}
 	public Mark at(Coordinates c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
@@ -349,7 +339,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
 			int mostPicked = 0;
 			for(int j = 0; j <= iterations; j++) { //Number of dots to draw, more dots for a clearer fractal
-				if (shouldQuit) return; //Stop drawing when the frame is closed, or a new drawing is selected
+
 				int vertIndex;
 				if (options.equal) 
 					do {									//Selecting a random vertex, loops until we get a vertex that passes the restrictions

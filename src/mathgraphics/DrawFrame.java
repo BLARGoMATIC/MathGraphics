@@ -37,16 +37,9 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 	 */
 	public DrawFrame(Options options) {//TODO change these arguments to an options object
 		this.options = options;
+		frame = new JFrame(options.name);
 		grid = new LEDGrid(new Dimension(800,800));
 		dp = new DrawPatterns(grid);
-		frame = new JFrame(options.name) {
-			private static final long serialVersionUID = -3004440339901731474L;
-			@Override
-			public void dispose() {
-				super.dispose();
-				dp.setShouldQuit(true); //Stop drawing when the frame is closed
-			}
-		};
 		frame.add(grid);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(800+16,800+39));
@@ -128,6 +121,10 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 		default:
 			break;
 		}
+	}
+	
+	public void dispose() {
+		frame.dispose();
 	}
 
 }
