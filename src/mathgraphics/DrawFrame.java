@@ -129,9 +129,5 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 			break;
 		}
 	}
-	
-	public void dispose() {
-		frame.dispose();
-	}
 
 }
