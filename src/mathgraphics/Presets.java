@@ -176,7 +176,7 @@ public enum Presets {
 							2
 					})
 	})),
-	SNOWFLAKE (new Options("Heptagonal Snowflake", new int[] {
+	SNOWFLAKE (new Options("Hexagonal Snowflake", new int[] {
 			6,			//Number of Sides
 			10000000	//Number of Iterations
 	}, false, true, new VertexRestrictions[] { 
