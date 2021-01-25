@@ -21,7 +21,10 @@ public class ChaosPolyOptions extends OptionPanel {
 	 */
 	private static final long serialVersionUID = 2462036980524333807L;
 	
-
+	
+	private JPanel presetPanel;
+	private JLabel presetLabel;
+	private JComboBox<Presets> presetBox;
 	private JPanel sidesPanel;
 	private JLabel sidesLabel;
 	private JPanel iterationsPanel;
@@ -46,6 +49,22 @@ public class ChaosPolyOptions extends OptionPanel {
 	
 	public ChaosPolyOptions() {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		
+		//preset Panel
+		
+		
+		presetPanel = new JPanel();
+		presetLabel = new JLabel("Preset:");
+		presetPanel.setLayout(new BoxLayout(presetPanel, BoxLayout.LINE_AXIS));
+		presetLabel.setAlignmentX(LEFT_ALIGNMENT);
+		presetBox = new JComboBox<>(Presets.values());
+		presetBox.setPreferredSize(new Dimension(50,20));
+		presetBox.setSelectedIndex(0);
+		presetPanel.add(presetLabel);
+		presetPanel.add(presetBox);
+		presetBox.addActionListener(e -> {
+			setOptions(((Presets)presetBox.getSelectedItem()).getOptions());
+		});
 		
 		//numSides Panel
 		sidesPanel = new JPanel();
@@ -156,6 +175,7 @@ public class ChaosPolyOptions extends OptionPanel {
 		equalPanel.add(orButton);
 		equalPanel.add(Box.createRigidArea(new Dimension(11,0)));
 		
+		add(presetPanel);
 		add(sidesPanel);
 		add(iterationsPanel);
 		add(colorPanel);
@@ -202,6 +222,7 @@ public class ChaosPolyOptions extends OptionPanel {
 		try {
 			sidesField.setText(Integer.toString(options.args[0]));
 			iterationsField.setText(Integer.toString(options.args[1]));
+			andButton.setSelected(options.equal);
 			v1Panel.setRestrictions(options.restrictions[0]);
 			v2Panel.setRestrictions(options.restrictions[1]);
 		} catch (NullPointerException e){

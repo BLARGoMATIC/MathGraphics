@@ -5,6 +5,10 @@ import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 
+/**
+ * @author John
+ * 
+ */
 public abstract class OptionPanel extends JPanel {
 	
 	//Start Members

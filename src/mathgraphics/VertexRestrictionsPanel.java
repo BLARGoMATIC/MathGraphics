@@ -174,11 +174,11 @@ public class VertexRestrictionsPanel extends JPanel {
 		return restrictions;
 	}
 	public void setRestrictions(VertexRestrictions restrictions) {
-		if (restrictions.isEquivalencePreference()) eButtonNP.setSelected(true);
+		if (!restrictions.isEquivalencePreference()) eButtonNP.setSelected(true);
 		else if (restrictions.isEquivalenceTrue()) eButtonTrue.setSelected(true);
 		else eButtonFalse.setSelected(true);
 		
-		if (restrictions.isAdjacentPreference()) aButtonNP.setSelected(true);
+		if (!restrictions.isAdjacentPreference()) aButtonNP.setSelected(true);
 		else if (restrictions.isAdjacentTrue()) aButtonTrue.setSelected(true);
 		else aButtonFalse.setSelected(true);
 		

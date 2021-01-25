@@ -3,6 +3,12 @@ package mathgraphics;
 import java.awt.Color;
 
 public class Options {
+	
+	/**
+	 * @param name friendly name
+	 * @param colors an array of 3 colors: Cold, Warm, Hot
+	 * @param args
+	 */
 	public String name;
 	public Color[] colors;
 	public int[] args;
