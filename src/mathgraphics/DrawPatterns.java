@@ -421,11 +421,9 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		
 		private int numberOfTasks;
 		private Coordinates[] vertex;
-		private int id;
 		public PlotPoints(int numberOfTasks, Coordinates[] vertex, int id) {
 			this.numberOfTasks = numberOfTasks;
 			this.vertex = vertex;
-			this.id = id;
 		}
 
 		@Override

@@ -141,6 +141,41 @@ public enum Presets {
 							2
 					})
 	})),
+	ALIEN (new Options("Alien Heptagon", new int[] {
+			7,			//Number of Sides
+			10000000	//Number of Iterations
+	}, false, true, new VertexRestrictions[] { 
+			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
+					new boolean[] {
+							false, //equivalencePreference
+							false, //equivalenceTrue
+							false, //adjacentPreference
+							false, //adjacentTrue
+							true, //offset1Preference
+							false, //offset1True
+							true, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							5,
+							2
+					}), 
+			new VertexRestrictions( //second set of vertex restrictions for restricting choices of the current vertex in regards to the vertex chosen before last
+					new boolean[] {
+							false, //equivalencePreference
+							false, //equivalenceTrue
+							false, //adjacentPreference
+							false, //adjacentTrue
+							true, //offset1Preference
+							false, //offset1True
+							true, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							5,
+							2
+					})
+	})),
 	BIOHAZARD (new Options("Biohazard Nonagram", new int[] {
 			9,			//Number of Sides
 			10000000	//Number of Iterations

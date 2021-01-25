@@ -3,9 +3,6 @@ package mathgraphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
 import javax.swing.JFrame;
 
 public class DrawFrame { //TODO separate this class from JFrame, as it adds no functionality. All it's doing is handling
