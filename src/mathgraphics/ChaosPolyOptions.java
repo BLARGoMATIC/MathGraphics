@@ -21,7 +21,6 @@ public class ChaosPolyOptions extends OptionPanel {
 	 */
 	private static final long serialVersionUID = 2462036980524333807L;
 	
-	
 	private JPanel presetPanel;
 	private JLabel presetLabel;
 	private JComboBox<Presets> presetBox;
@@ -51,8 +50,6 @@ public class ChaosPolyOptions extends OptionPanel {
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		//preset Panel
-		
-		
 		presetPanel = new JPanel();
 		presetLabel = new JLabel("Preset:");
 		presetPanel.setLayout(new BoxLayout(presetPanel, BoxLayout.LINE_AXIS));
@@ -62,9 +59,9 @@ public class ChaosPolyOptions extends OptionPanel {
 		presetBox.setSelectedIndex(0);
 		presetPanel.add(presetLabel);
 		presetPanel.add(presetBox);
-		presetBox.addActionListener(e -> {
-			setOptions(((Presets)presetBox.getSelectedItem()).getOptions());
-		});
+		presetBox.addActionListener(e -> 
+			setOptions(((Presets)presetBox.getSelectedItem()).getOptions())
+		);
 		
 		//numSides Panel
 		sidesPanel = new JPanel();
@@ -203,7 +200,7 @@ public class ChaosPolyOptions extends OptionPanel {
 
 	@Override
 	public Options getOptions() {
-		Options options = super.getOptions();
+		Options options = new Options(presetBox.getSelectedItem().toString());
 		options.equal = andButton.isSelected();
 		options.colors = new Color[] { 			//While the color comboBoxes are type String, the COLOR[] field supplied by Options.class has identical index values
 				COLORS[coldColorBox.getSelectedIndex()],
