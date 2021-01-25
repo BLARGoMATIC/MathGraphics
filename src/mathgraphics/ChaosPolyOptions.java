@@ -222,7 +222,8 @@ public class ChaosPolyOptions extends OptionPanel {
 		try {
 			sidesField.setText(Integer.toString(options.args[0]));
 			iterationsField.setText(Integer.toString(options.args[1]));
-			andButton.setSelected(options.equal);
+			if(options.equal) andButton.setSelected(true);
+			else orButton.setSelected(true);
 			v1Panel.setRestrictions(options.restrictions[0]);
 			v2Panel.setRestrictions(options.restrictions[1]);
 		} catch (NullPointerException e){
