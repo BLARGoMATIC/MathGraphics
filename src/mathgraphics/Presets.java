@@ -1,7 +1,7 @@
 package mathgraphics;
 
 public enum Presets {
-	BLANK (new Options("Blank", new int[] {
+	UNMODIFIED (new Options("Unrestricted Pentagon", new int[] {
 			5,			//Number of Sides
 			10000000	//Number of Iterations
 	}, false, true, new VertexRestrictions[] { 
@@ -36,7 +36,7 @@ public enum Presets {
 							0
 					})
 	})),
-	MONKE (new Options("Monke", new int[] {
+	FACES (new Options("Pentagon Faces", new int[] {
 			5,			//Number of Sides
 			10000000	//Number of Iterations
 	}, false, true, new VertexRestrictions[] { 
@@ -211,6 +211,41 @@ public enum Presets {
 							0
 					})
 	})),
+	OCTAGONALSNOWFLAKE (new Options("Octagonal Snowflake", new int[] {
+			8,			//Number of Sides
+			10000000	//Number of Iterations
+	}, false, true, new VertexRestrictions[] { 
+			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
+					new boolean[] {
+							false, //equivalencePreference
+							false, //equivalenceTrue
+							true, //adjacentPreference
+							false, //adjacentTrue
+							false, //offset1Preference
+							false, //offset1True
+							false, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							0,
+							0
+					}), 
+			new VertexRestrictions( //second set of vertex restrictions for restricting choices of the current vertex in regards to the vertex chosen before last
+					new boolean[] {
+							false, //equivalencePreference
+							false, //equivalenceTrue
+							true, //adjacentPreference
+							false, //adjacentTrue
+							true, //offset1Preference
+							false, //offset1True
+							true, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							6,
+							2
+					})
+	})),
 	CHAOSSQUARE (new Options("Chaos Square", new int[] {
 			4,			//Number of Sides
 			10000000	//Number of Iterations
@@ -281,6 +316,77 @@ public enum Presets {
 							0
 					})
 	})),
+	OCTAGONALFACES (new Options("Octagonal Faces", new int[] {
+			8,			//Number of Sides
+			10000000	//Number of Iterations
+	}, false, true, new VertexRestrictions[] { 
+			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
+					new boolean[] {
+							true, //equivalencePreference
+							false, //equivalenceTrue
+							false, //adjacentPreference
+							false, //adjacentTrue
+							true, //offset1Preference
+							false, //offset1True
+							true, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							6,
+							2
+					}), 
+			new VertexRestrictions( //second set of vertex restrictions for restricting choices of the current vertex in regards to the vertex chosen before last
+					new boolean[] {
+							true, //equivalencePreference
+							false, //equivalenceTrue
+							false, //adjacentPreference
+							false, //adjacentTrue
+							false, //offset1Preference
+							false, //offset1True
+							false, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							0,
+							0
+					})
+	})),
+	RIGIDOCTAGRAM (new Options("Rigid Octagram", new int[] {
+			8,			//Number of Sides
+			10000000	//Number of Iterations
+	}, false, true, new VertexRestrictions[] { 
+			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
+					new boolean[] {
+							false, //equivalencePreference
+							false, //equivalenceTrue
+							true, //adjacentPreference
+							false, //adjacentTrue
+							true, //offset1Preference
+							false, //offset1True
+							true, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							6,
+							2
+					}), 
+			new VertexRestrictions( //second set of vertex restrictions for restricting choices of the current vertex in regards to the vertex chosen before last
+					new boolean[] {
+							false, //equivalencePreference
+							false, //equivalenceTrue
+							false, //adjacentPreference
+							false, //adjacentTrue
+							false, //offset1Preference
+							false, //offset1True
+							false, //offset2Preference
+							false  //offset2True
+					},
+					new int[] {
+							0,
+							0
+					})
+	})),
+	
 	;
 
 	private Options options;
