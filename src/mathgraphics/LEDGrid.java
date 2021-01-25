@@ -63,7 +63,7 @@ public class LEDGrid extends JPanel {
 		this.showIncrement = showIncrement;
 	}
     public String getIncrement(){
-    	return "i = " + this.increment;
+    	return this.increment + "%";
     }
     /**
      * @param i Increment for whatever Loop you're drawing
