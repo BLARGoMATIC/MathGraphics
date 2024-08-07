@@ -57,6 +57,9 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 	
 	public void draw() {
 		switch(pattern) {
+		case 1: //Chaos Polygon new
+			dp.chaosPolygonNew(options);
+			break;
 		case 5: //Circle Wrap
 			Color c1 = Color.RED;
 			Color c2 = Color.BLUE;

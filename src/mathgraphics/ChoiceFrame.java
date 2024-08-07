@@ -69,6 +69,7 @@ public class ChoiceFrame {
 		OptionPanel[] designOptionCollection = {
 				//						new EmptyOptionsPanel(),
 				new ChaosPolyOptions(),
+				new ChaosPolyNewOptions()
 				//						new CircleWrapOptions(),
 				//						new TreeOptions(),
 				//						new SquareOptions(),
@@ -86,7 +87,7 @@ public class ChoiceFrame {
 		choiceBox = new JComboBox<>(designOptionCollection); //This is so much easier than xaml
 		designComboBoxPanel.add(choiceBox); //Adding it to the selections Panel,
 		choiceBox.setPreferredSize(new Dimension(200,25));
-		choiceBox.setSelectedIndex(0);
+		choiceBox.setSelectedIndex(1);
 		designOptionsPanel.add((JPanel)choiceBox.getSelectedItem());
 		buttonPanel.setLayout(new BoxLayout(buttonPanel , BoxLayout.X_AXIS));
 		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
@@ -111,6 +112,7 @@ public class ChoiceFrame {
 				if (drawFrame != null) drawFrame.dispose();
 				try {
 					drawFrame = new DrawFrame(((OptionPanel)choiceBox.getSelectedItem()).getOptions());
+					drawFrame.pattern = choiceBox.getSelectedIndex();
 					Thread t = new Thread() { //This somehow allows the design 'animation' to begin right when the frame opens, as opposed to having a white box for a little bit
 						@Override
 						public void run() {  //TODO find a way to kill this thread, or stop the drawing once the frame has been closed in order to prevent unnecessary cpu usage. Don't want to draw a picture we can't see!

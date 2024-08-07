@@ -2,6 +2,8 @@ package mathgraphics;
 
 import java.awt.Color;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DrawPatterns { //TODO clean up methods, it's kind of messy at the moment.
 
@@ -297,6 +299,209 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			grid.repaint();
 		}
 	}	
+	
+	/**
+	 * @param bits Size in bits, of the rotate window 
+	 * @param x the number to get rotated
+	 * @param n to number of places to rotate
+	 * @return rotated number
+	 */
+	public int leftRotate(int bits, int x, int n) {
+		int  mask = (1 << bits) - 1;
+		return mask & ((x << n) | (x >>> (bits - n)));
+	}
+	
+	public void chaosPolygonNew(Options options) {
+		int numSides = options.args[0];
+		int iterations = options.args[1];
+		int currentMask = options.args[2];
+		int previousMask = options.args[3];
+		int drawPolygon = options.args[4];
+		Color cold = options.colors[0];
+		Color warm = options.colors[1];
+		Color hot = options.colors[2];
+		boolean andOperator = options.equal;
+		Coordinates[] vertex = new Coordinates[numSides];
+		Coordinates pencil = new Coordinates(grid.getHorizontalLEDs()/2, grid.getHorizontalLEDs()/2);
+//		Coordinates chosenVert;
+		
+		//		*************** Math for a regular pentagon ******************
+		//Adjusting the rotational offset of the polygon so it's symmetrical along the vertical axis
+		{
+			double i;
+			if (numSides % 2 != 0) {
+				i = -Math.PI/(2*numSides);
+			}//Even sided polygons are already symmetrical, so there's no need to rotate them.
+			else {
+				i = 0;
+			}//Calculate vertex locations
+			for(int k = 0; k < vertex.length; k++) {
+				vertex[k] = new Coordinates((int)Math.rint(((2f * numSides / 5)*grid.getHorizontalLEDs()/numSides)*Math.cos(i))+grid.getHorizontalLEDs()/(2), 
+						(int)Math.rint(((2f * numSides / 5)*grid.getVerticalLEDs()/numSides)*Math.sin(i))+grid.getVerticalLEDs()/(2));
+				i += 2*Math.PI/numSides;
+			}
+
+			//drawing the polygon 
+			if (drawPolygon > 0) {
+				for (int k = 0; k <= (numSides-1); ++k) {
+					addLine(vertex[k], vertex[Math.floorMod(k+1, numSides)]);
+				}
+			}
+		}
+
+		//Setup numbers to represent specific vertices //TODO setup double mask
+		int[] vertexMasks = new int[numSides];
+		for(int i = 0; i < vertexMasks.length; i++) {
+			vertexMasks[i] = 1;
+			vertexMasks[i] = vertexMasks[i] << i;
+		}
+
+		/* Generating an array of allowable vertex ids to be used
+		 * 
+		 * hexagon - 6 sides with all vertices would look like
+		 * 					0 1 2 3 4 5
+		 * with restriction mask 1 0 1 0 1 1 it would be
+		 * 					0   2  4  5
+		 * which will then be turned into the array{0, 2, 4, 5}
+		 */
+		int[] rotatedCurrentMask = new int[numSides];
+		int[] rotatedPreviousMask = new int[numSides];
+		{	//Code block cause I like using the variable i
+//			int j = 0;
+			for(int i = 0; i < rotatedCurrentMask.length; i++) {			//cycle through all vertices and rotate the mask to be use later
+				rotatedCurrentMask[i] = leftRotate(numSides, currentMask, i);
+				rotatedPreviousMask[i] = leftRotate(numSides, previousMask, i);
+			}
+		}
+		System.out.println("rotatedMasks:              VertexMasks:");
+		for(int i = 0; i < rotatedCurrentMask.length; i++) {
+			System.out.println(Integer.toBinaryString(rotatedCurrentMask[i]) + " = " + rotatedCurrentMask[i] + "                       " + Integer.toBinaryString(vertexMasks[i]) + " = " + vertexMasks[i]);
+		}
+		System.out.println("currentMask: "+ Integer.toBinaryString(currentMask) + " PreviousMask: " + Integer.toBinaryString(previousMask));
+		
+		
+		List<ArrayList<ArrayList<Integer>>> modListMatrix = new ArrayList<>(); //using an arraylist here because its dynamic and we don't yet know how many valid vertices there will be.
+//		int[][][] modMatrix;
+		if(andOperator) {
+			for(int i = 0; i < numSides; i++) {
+
+				modListMatrix.add(new ArrayList<>());
+
+				for(int j = 0; j < numSides; j++) {
+
+					modListMatrix.get(i).add(new ArrayList<>()); 
+
+					for(int k = 0; k < numSides; k++) {
+						if((rotatedPreviousMask[i] & rotatedCurrentMask[j] & vertexMasks[k]) > 0) 		modListMatrix.get(i).get(j).add(k);
+					}
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < numSides; i++) {
+
+				modListMatrix.add(new ArrayList<>());
+
+				for(int j = 0; j < numSides; j++) {
+
+					modListMatrix.get(i).add(new ArrayList<>()); 
+
+					for(int k = 0; k < numSides; k++) {
+						if(((rotatedPreviousMask[i] | rotatedCurrentMask[j]) & vertexMasks[k]) > 0) 		modListMatrix.get(i).get(j).add(k);
+					}
+				}
+			}
+		}
+		int[][][] modMatrix = modListMatrix.stream().map(u1 -> u1.stream().map(u2 -> u2.stream().mapToInt(i->i).toArray() ).toArray(int[][]::new)).toArray(int[][][]::new);
+		
+//		String[][][] stringArray = mainList.stream().map(u1 -> u1.stream().map(u2 -> u2.toArray(new String[0])).toArray(String[][]::new)).toArray(String[][][]::new));
+		
+		
+		System.out.println("\nMod Matrix:");
+		for(int[][] ints : modMatrix) {
+			for (int[] i : ints) {
+				for(int j : i) {
+					System.out.print(" " + j);
+				}
+				System.out.print("   ");
+			}
+			System.out.print("\n");
+		}
+		int v0 = 0;
+		int v1 = 0;
+		int v2 = 0;
+		//Selecting a random point
+		pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
+		pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
+		
+		for (int j = 0; j < iterations; j++) {
+			grid.setIncrement((int)((float)j/(float)iterations * 100)); //percentage done
+			
+//			v1 = Math.floorMod(((restrictedVertices[rand.nextInt(restrictedVertices.length)]) + v0), numSides); // OLD
+			/*
+			 *current Vertex = int[lastVertex][currentVertex] + lastVertex mod numSides 
+			 *were current vertex is randomized. All the setup above was to make the random picking
+			 *very limited so we only have to pick one random number for each point,
+			 *instead of picking a point, then checking if its valid, then picking a different one if not, repeat ad naseum
+			 */
+			
+			v0 = Math.floorMod(modMatrix[v2][v1][rand.nextInt(modMatrix[v2][v1].length)] + 0, numSides); //TODO this is giving me a headache
+			
+			//moving halfway to that vertex
+			pencil.x = (vertex[v0].x + pencil.x)/2; // add argument to change distance to next vertex
+			pencil.y = (vertex[v0].y + pencil.y)/2;
+			
+			v2 = v1;
+			v1 = v0;
+			
+			int timesPicked = at(pencil).getTimesPicked();
+
+			//The Equation for getting the new color
+			//For new red value R, percentage p, starting color c2, ending color c1: R = (c1.R * p) + (c2 * (1-p))
+			double rate = 1-((timesPicked % 100)/100d);
+			int threshold = 100;
+
+			try {
+				//A percentage that goes from 0% to 100% 3 times between 0 and 'number of iterations'
+				if (timesPicked < threshold ) {
+					pencil.mark = new Mark(
+							(int)Math.rint((Color.BLACK.getRed() * rate) + (cold.getRed())  * (1-rate)),
+							(int)Math.rint((Color.BLACK.getGreen() * rate) + (cold.getGreen())* (1-rate)),
+							(int)Math.rint((Color.BLACK.getBlue() * rate) + (cold.getBlue()) * (1-rate)),
+							pencil.mark.getAlpha(),
+							at(pencil).getTimesPicked() + 1);
+				}
+				else if (timesPicked >= threshold && timesPicked < threshold*2) {
+					pencil.mark = new Mark(
+							(int)Math.rint((cold.getRed() * rate) + (warm.getRed())  * (1-rate)),
+							(int)Math.rint((cold.getGreen() * rate) + (warm.getGreen())* (1-rate)),
+							(int)Math.rint((cold.getBlue() * rate) + (warm.getBlue()) * (1-rate)),
+							pencil.mark.getAlpha(),
+							at(pencil).getTimesPicked() + 1);
+				}
+				else if (timesPicked >= threshold*2 && timesPicked < threshold*3) {//&& timesPicked < threshold*3
+					pencil.mark = new Mark(
+							(int)Math.rint((warm.getRed() * rate) + (hot.getRed())  * (1-rate)),
+							(int)Math.rint((warm.getGreen() * rate) + (hot.getGreen())* (1-rate)),
+							(int)Math.rint((warm.getBlue() * rate) + (hot.getBlue()) * (1-rate)),
+							pencil.mark.getAlpha(),
+							at(pencil).getTimesPicked() + 1);
+				}
+				else pencil.mark = new Mark(at(pencil).brighter(),
+						at(pencil).getTimesPicked() + 1);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+			//Placing a point at that location
+			addPoint(pencil);
+			grid.repaint(pencil.x, pencil.y, 1, 1);
+			grid.repaint(0, 0, 10, 30);
+		}
+		grid.setIsComplete(true);
+		grid.repaint();
+		
+	}
+	
 	/** Formerly ChaosPentagon(), now ChaosPolygon, I figured out how to generalize the chaos game and vertex choice restrictions.
 	 * @param iterations Number of dots to draw in the chaos game
 	 * @param numSides Number n of sides for the n-gon to draw. ex. 3 is a triangle, 4 is a square, etc.
@@ -320,7 +525,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}//Even sided polygons are already symmetrical, so there's no need to rotate them.
 		else {
 			i = 0;
-		}
+		}//Calculate vertex locations
 		for(int k = 0; k < vertex.length; k++) {
 			vertex[k] = new Coordinates((int)Math.rint(((2f * numSides / 5)*grid.getHorizontalLEDs()/numSides)*Math.cos(i))+grid.getHorizontalLEDs()/(2), 
 					(int)Math.rint(((2f * numSides / 5)*grid.getVerticalLEDs()/numSides)*Math.sin(i))+grid.getVerticalLEDs()/(2));
