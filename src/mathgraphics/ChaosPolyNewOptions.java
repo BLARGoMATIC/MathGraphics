@@ -2,6 +2,8 @@ package mathgraphics;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
@@ -28,7 +30,7 @@ public class ChaosPolyNewOptions extends OptionPanel {
 	 */
 	private static final long serialVersionUID = 7685755187905813097L;
 	JTextField iterationsField;
-	private JComboBox<String> sidesField;
+	private JComboBox<String> sidesBox;
 	String[] polygons = {
 			"Triangle",
 			"Square",
@@ -38,15 +40,18 @@ public class ChaosPolyNewOptions extends OptionPanel {
 			"Octagon",
 			"Nonagon",
 			"Decagon"};	
+	private JComboBox<Presets> presetBox;
 	private JPanel vertexPanel;
 	private VertexMaskPanel cVertexPanel;
 	private VertexMaskPanel pVertexPanel;
 	private JComboBox<String> equalBox;
-//	private DrawPatterns dp;
-//	private List<JRadioButton> vertexButtons;
+	private JButton allButton;
+	private JButton noneButton;
+	private JPanel vertexMiddlePanel;
 	private JPanel iterationsPanel;
 	private JLabel iterationsLabel;
 	private JPanel drawPolygonPanel;
+	private JPanel middlePanel;
 	private JCheckBox drawPolygonCheckbox;
 	private JLabel drawPolygonLabel;
 	private JPanel colorPanel;
@@ -61,11 +66,9 @@ public class ChaosPolyNewOptions extends OptionPanel {
 	int numSides;
 	
 	public ChaosPolyNewOptions() {
-//		this.setPreferredSize(new Dimension(200,200));
 		
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
-
+		
 		//Iterations Panel
 		iterationsPanel = new JPanel();
 		iterationsLabel = new JLabel("# of Iterations");
@@ -107,49 +110,73 @@ public class ChaosPolyNewOptions extends OptionPanel {
 		drawPolygonPanel.add(drawPolygonLabel);
 		drawPolygonPanel.add(drawPolygonCheckbox);
 		
-		JPanel middlePanel = new JPanel();
+		middlePanel = new JPanel();
 		middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.LINE_AXIS));
 		middlePanel.add(Box.createHorizontalGlue());
 		middlePanel.add(drawPolygonPanel);
 		middlePanel.add(iterationsPanel);
 		middlePanel.add(Box.createHorizontalGlue());
 
-		sidesField = new JComboBox<>(polygons);
-		sidesField.setMaximumSize(new Dimension(100,20));
-		sidesField.setSelectedIndex(2);
-		sidesField.addItemListener(new ItemListener() { //TODO make a new panel class to clear up tihs constructor, then to refresh it, we can just dispose the old panel and make a new one.
-			@Override
-			public void itemStateChanged(ItemEvent arg0) {
+		presetBox = new JComboBox<>(Presets.values());
+		presetBox.setMaximumSize(new Dimension(200,20));
+		presetBox.addActionListener(e -> {
+				setOptions(((Presets)presetBox.getSelectedItem()).getOptions());
+				System.out.println(((Presets)presetBox.getSelectedItem()).getOptions().args[2] + " " + ((Presets)presetBox.getSelectedItem()).getOptions().args[3]);
+//			int nothing = cVertexPanel.getMask();
+//			int nothing2 = pVertexPanel.getMask(); //debugging
+		});
+		sidesBox = new JComboBox<>(polygons);
+		sidesBox.setMaximumSize(new Dimension(200,20));
+		sidesBox.setSelectedIndex(2);
+		sidesBox.addItemListener(e -> {		
+				
 				vertexPanel.removeAll();
-				equalBox = new JComboBox<>(new String[]{"OR","AND"});
-				equalBox.setSelectedIndex(1);
-				equalBox.setPreferredSize(new Dimension(50,20));
-				equalBox.setMaximumSize(new Dimension(50,20));
-				cVertexPanel = new VertexMaskPanel(sidesField.getSelectedIndex() + 3, "Current vertex");
-				pVertexPanel = new VertexMaskPanel(sidesField.getSelectedIndex() + 3, "Previous vertex");
+				cVertexPanel = new VertexMaskPanel(sidesBox.getSelectedIndex() + 3, "Current vertex");
+				pVertexPanel = new VertexMaskPanel(sidesBox.getSelectedIndex() + 3, "Previous vertex");
 				cVertexPanel.setPreferredSize(new Dimension(300,300));
 				pVertexPanel.setPreferredSize(new Dimension(300,300));
 				vertexPanel.add(cVertexPanel);
 				vertexPanel.add(Box.createRigidArea(new Dimension(2,0)));
-				vertexPanel.add(equalBox);
+				vertexPanel.add(vertexMiddlePanel);
 				vertexPanel.add(Box.createRigidArea(new Dimension(2,0)));
 				vertexPanel.add(pVertexPanel);
 				validate();
-			}
 		});
 		vertexPanel = new JPanel();
 		vertexPanel.setLayout(new BoxLayout(vertexPanel, BoxLayout.LINE_AXIS));
 		equalBox = new JComboBox<>(new String[]{"OR","AND"});
 		equalBox.setSelectedIndex(1);
-		equalBox.setPreferredSize(new Dimension(50,20));
-		equalBox.setMaximumSize(new Dimension(50,20));
-		cVertexPanel = new VertexMaskPanel(sidesField.getSelectedIndex() + 3, "Current vertex");
-		pVertexPanel = new VertexMaskPanel(sidesField.getSelectedIndex() + 3, "Previous vertex");
+		equalBox.setPreferredSize(new Dimension(60,20));
+		equalBox.setMaximumSize(new Dimension(60,20));
+		equalBox.setAlignmentX(LEFT_ALIGNMENT);
+		allButton = new JButton("All");
+		allButton.setPreferredSize(new Dimension(60,20));
+		allButton.setMaximumSize(new Dimension(60,20));
+		noneButton = new JButton("None");
+		noneButton.setPreferredSize(new Dimension(60,20));
+		noneButton.setMaximumSize(new Dimension(60,20));
+		vertexMiddlePanel = new JPanel();
+		vertexMiddlePanel.setLayout(new BoxLayout(vertexMiddlePanel, BoxLayout.PAGE_AXIS));
+		cVertexPanel = new VertexMaskPanel(sidesBox.getSelectedIndex() + 3, "Current vertex");
+		pVertexPanel = new VertexMaskPanel(sidesBox.getSelectedIndex() + 3, "Previous vertex");
 		cVertexPanel.setPreferredSize(new Dimension(300,300));
 		pVertexPanel.setPreferredSize(new Dimension(300,300));
+		
+		equalBox.addItemListener(e -> {
+//			pVertexPanel.setAllButtons((equalBox.getSelectedIndex() > 0) ? true : false);
+		});
+		allButton.addActionListener(e ->{
+			pVertexPanel.setAllButtons(true);
+		});
+		noneButton.addActionListener(e ->{
+			pVertexPanel.setAllButtons(false);
+		});
 		vertexPanel.add(cVertexPanel);
 		vertexPanel.add(Box.createRigidArea(new Dimension(2,0)));
-		vertexPanel.add(equalBox);
+		vertexMiddlePanel.add(equalBox);
+		vertexMiddlePanel.add(allButton);
+		vertexMiddlePanel.add(noneButton);
+		vertexPanel.add(vertexMiddlePanel);
 		vertexPanel.add(Box.createRigidArea(new Dimension(2,0)));
 		vertexPanel.add(pVertexPanel);
 
@@ -187,13 +214,14 @@ public class ChaosPolyNewOptions extends OptionPanel {
 		
 		add(colorPanel);
 		add(middlePanel);
-		add(sidesField);
+		add(sidesBox);
+		add(presetBox);
 		add(vertexPanel);
 		setVisible(true);
 	}
 
 	public int[] getArgs() {
-			int[] args = {sidesField.getSelectedIndex() + 1};
+			int[] args = {sidesBox.getSelectedIndex() + 1};
 			return args;
 	}
 	@Override
@@ -207,21 +235,27 @@ public class ChaosPolyNewOptions extends OptionPanel {
 
 	@Override
 	public void setOptions(Options options) {
-		// TODO Auto-generated method stub
-		
+		try {
+			sidesBox.setSelectedIndex(options.args[0] - 3);
+			iterationsField.setText(Integer.toString(options.args[1]));
+			equalBox.setSelectedIndex(options.equal ? 0 : 1);			//TODO funny, somewhere this is backwards, so I need to track down where later. All the presets are messed up because of it
+			cVertexPanel.setMask(options.args[2]);
+			pVertexPanel.setMask(options.args[3]);
+			
+		} catch (NullPointerException e){
+			JOptionPane.showMessageDialog(null, "That preset is incompatible with this design.");
+		}		
 	}
 	@Override
 	public Options getOptions() {
 		Options options = new Options("Chaos Polygon New"); //Name of the Drawing for ChoiceFrame
 		
-		int drawPolygon = drawPolygonCheckbox.isSelected() ? 1 : 0;
 		options.args = new int[] {
-				//				Integer.parseInt(sidesField.getText())
-				sidesField.getSelectedIndex() + 3,
+				sidesBox.getSelectedIndex() + 3,
 				Integer.parseInt(iterationsField.getText()),
 				cVertexPanel.getMask(),
 				pVertexPanel.getMask(),
-				drawPolygon
+				(drawPolygonCheckbox.isSelected() ? 1 : 0)
 		};
 		options.colors = new Color[] { 			//While the color comboBoxes are type String, the COLOR[] field supplied by Options.class has identical index values
 				COLORS[coldColorBox.getSelectedIndex()],

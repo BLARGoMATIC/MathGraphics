@@ -126,6 +126,10 @@ public class ChoiceFrame {
 				} catch (NumberFormatException e2) {
 					JOptionPane.showMessageDialog(null, "Numbers Only Please");
 					e2.printStackTrace();
+				} catch (IllegalArgumentException e4) {
+					if (e4.getMessage() == "bound must be positive")
+					JOptionPane.showMessageDialog(null, "That pattern has a dead-end, try another one.");
+					e4.printStackTrace();
 				} catch (Exception e3) {
 					e3.printStackTrace();
 				}

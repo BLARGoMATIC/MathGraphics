@@ -39,6 +39,11 @@ public class Options {
 		this.showIncrement = showIncrement;
 		this.restrictions = restrictions;
 	}
+	public Options(String name, int[] args, boolean equal, boolean showIncrement) {
+		this.args = args;
+		this.equal = equal;
+		this.showIncrement = showIncrement;
+	}
 	public Options(String name, int[] args, boolean equal, VertexRestrictions[] restrictions) {
 		this.name = name;
 		this.args = args;

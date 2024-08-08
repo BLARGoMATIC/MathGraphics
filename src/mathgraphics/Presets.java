@@ -1,9 +1,11 @@
 package mathgraphics;
 
 public enum Presets {
-	UNMODIFIED (new Options("Unrestricted Pentagon", new int[] {
+	UNMODIFIED (new Options("5 - Unrestricted Pentagon", new int[] {
 			5,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			31,
+			31,		
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -36,9 +38,11 @@ public enum Presets {
 							0
 					})
 	})),
-	FACES (new Options("Pentagon Faces", new int[] {
+	FACES (new Options("5- Pentagon Faces", new int[] {
 			5,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			30,
+			31
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -71,9 +75,11 @@ public enum Presets {
 							0
 					})
 	})),
-	SIERPINKSKI (new Options("Sierpinski Triangle", new int[] {
+	SIERPINKSKI (new Options("3 - Sierpinski Triangle", new int[] {
 			3,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			111,
+			111
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -106,9 +112,11 @@ public enum Presets {
 							0
 					})
 	})),
-	HEPTAGONALSTAR (new Options("Heptagonal Star", new int[] {
+	HEPTAGONALSTAR (new Options("7 - Heptagonal Star", new int[] {
 			7,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			25,
+			25
 	}, true, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -141,9 +149,11 @@ public enum Presets {
 							2
 					})
 	})),
-	BIOHAZARD (new Options("Biohazard Nonagram", new int[] {
+	BIOHAZARD (new Options("9 - Biohazard Nonagram", new int[] {
 			9,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			380,
+			491
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -176,9 +186,11 @@ public enum Presets {
 							2
 					})
 	})),
-	SNOWFLAKE (new Options("Heptagonal Snowflake", new int[] {
+	SNOWFLAKE (new Options("6 - Hexagonal Snowflake", new int[] {
 			6,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			125,
+			57
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -211,9 +223,11 @@ public enum Presets {
 							0
 					})
 	})),
-	OCTAGONALSNOWFLAKE (new Options("Octagonal Snowflake", new int[] {
+	OCTAGONALSNOWFLAKE (new Options("8 - Octagonal Snowflake", new int[] {
 			8,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			125,
+			57
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -246,9 +260,11 @@ public enum Presets {
 							2
 					})
 	})),
-	CHAOSSQUARE (new Options("Chaos Square", new int[] {
+	CHAOSSQUARE (new Options("4 - Chaos Square", new int[] {
 			4,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			12,
+			12
 	}, true, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -281,9 +297,11 @@ public enum Presets {
 							0
 					})
 	})),
-	TWISTEDSTAR (new Options("Hexagonal Twisted Star", new int[] {
+	TWISTEDSTAR (new Options("6 - Hexagonal Twisted Star", new int[] {
 			6,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			47,
+			61
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -316,9 +334,11 @@ public enum Presets {
 							0
 					})
 	})),
-	OCTAGONALFACES (new Options("Octagonal Faces", new int[] {
+	OCTAGONALFACES (new Options("8 - Octagonal Faces", new int[] {
 			8,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			186,
+			254
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -351,9 +371,11 @@ public enum Presets {
 							0
 					})
 	})),
-	RIGIDOCTAGRAM (new Options("Rigid Octagram", new int[] {
+	RIGIDOCTAGRAM (new Options("8 - Rigid Octagram", new int[] {
 			8,			//Number of Sides
-			10000000	//Number of Iterations
+			10000000,	//Number of Iterations
+			57,
+			255
 	}, false, true, new VertexRestrictions[] { 
 			new VertexRestrictions( //Initializing an array of arrays is a pain in the ass
 					new boolean[] {
@@ -386,6 +408,20 @@ public enum Presets {
 							0
 					})
 	})),
+	OCTALSTARFISH (new Options("8 - Octal Starfish", new int[] {
+			8,			//Number of Sides
+			10000000,	//Number of Iterations
+			56,
+			110
+	}, true, true
+	)),
+	DECAGONSPIKEDWHEEL (new Options("10 - Spiked Wheel", new int[] {
+			8,			//Number of Sides
+			10000000,	//Number of Iterations
+			56,
+			110
+	}, true, true
+	)),
 	
 	;
 

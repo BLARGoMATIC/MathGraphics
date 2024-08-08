@@ -166,8 +166,8 @@ public class ChaosPolyOptions extends OptionPanel {
 		
 		equalPanel = new JPanel();
 		equalPanel.setLayout(new BoxLayout(equalPanel, BoxLayout.LINE_AXIS));
-		andButton = new JRadioButton("And");
-		orButton = new JRadioButton("Or");
+		andButton = new JRadioButton("Or");
+		orButton = new JRadioButton("And");
 		orButton.setSelected(true);
 		equalBGroup = new ButtonGroup();
 		equalBGroup.add(andButton);

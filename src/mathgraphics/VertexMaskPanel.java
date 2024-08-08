@@ -72,10 +72,12 @@ public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want 
 			vertexButtons.add(new JRadioButton());
 		}
 		
-		int k = 0;
+		int k = vertex.length - 1;
+		int i = 0;
 		for (JRadioButton b : vertexButtons) {
 			vertexPanel.add(b);
-			b.setBounds(vertex[k].x-10, vertex[k].y-10, 20, 20);
+			i = k % vertex.length;
+			b.setBounds(vertex[i].x-10, vertex[i].y-10, 20, 20);
 			b.setOpaque(false);
 			b.setSelected(true);
 			k++;
@@ -111,14 +113,36 @@ public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want 
 	 * @return the mask
 	 */
 	public int getMask() {
-		int vertexMask = 0;							
-		for (JRadioButton b : vertexButtons) {		
-			vertexMask = vertexMask << 1;			
-			if(b.isSelected()) 	vertexMask++;		
+		int vertexMask = 0;
+		char[] charMask = new char[vertexButtons.size()];
+		int i = 0;
+		for (JRadioButton b : vertexButtons) {			//They're backwards from what I want, as its easier to set the mask the other direction.
+			charMask[i++] = b.isSelected() ? '1' : '0';	//I need all the leading and trailing zeros to remain in place when I reverse. Doing it with math and operands either drops the leading or the tailing zeros.
 		}
+		
+		vertexMask = Integer.parseInt(new StringBuilder(new String(charMask)).reverse().toString(), 2); //reverse!
+		
 		return vertexMask;
 	}
+	public void setMask(int mask) {
+		int i = 1;
+		for(JRadioButton b : vertexButtons) {
+			b.setSelected(((mask & i) > 0) ? true : false);
+			i = i << 1;
+//			System.out.print(i + " ");
+		}
+//		System.out.print("\n");
+	}
+	public void setAllButtons(boolean isSelected) {
+		for(JRadioButton b : vertexButtons) {
+			b.setSelected(isSelected);
+		}
+	}
+	
 	public void setRestrictions(VertexRestrictions restrictions) {
 		
+	}
+	private int reverse(int i) {	
+		return Integer.parseInt(new StringBuilder(Integer.toBinaryString(i)).reverse().toString());
 	}
 }

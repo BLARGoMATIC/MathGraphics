@@ -377,7 +377,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		for(int i = 0; i < rotatedCurrentMask.length; i++) {
 			System.out.println(Integer.toBinaryString(rotatedCurrentMask[i]) + " = " + rotatedCurrentMask[i] + "                       " + Integer.toBinaryString(vertexMasks[i]) + " = " + vertexMasks[i]);
 		}
-		System.out.println("currentMask: "+ Integer.toBinaryString(currentMask) + " PreviousMask: " + Integer.toBinaryString(previousMask));
+		System.out.println("currentMask: "+ currentMask + " - " + Integer.toBinaryString(currentMask) + " PreviousMask: " + previousMask + " - " + Integer.toBinaryString(previousMask));
 		
 		
 		List<ArrayList<ArrayList<Integer>>> modListMatrix = new ArrayList<>(); //using an arraylist here because its dynamic and we don't yet know how many valid vertices there will be.
@@ -418,15 +418,17 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		
 		
 		System.out.println("\nMod Matrix:");
-		for(int[][] ints : modMatrix) {
-			for (int[] i : ints) {
-				for(int j : i) {
-					System.out.print(" " + j);
+		for(int i = 0; i < numSides; i++) {
+			for(int j = 0; j < numSides; j++) {
+				for(int k = 0; k < numSides; k++) {
+					System.out.print((modMatrix[i][j].length > k) ? (modMatrix[i][j][k] + " ") : ( "-" + " "));
 				}
 				System.out.print("   ");
 			}
 			System.out.print("\n");
 		}
+		
+		
 		int v0 = 0;
 		int v1 = 0;
 		int v2 = 0;
