@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
 
-public class DrawFrame {
+public class DrawFrame { //TODO separate this class from JFrame, as it adds no functionality. All it's doing is handling
 	
 	/**
 	 * Integer identifier for pattern to draw: 
@@ -54,9 +54,6 @@ public class DrawFrame {
 	
 	public void draw() {
 		switch(pattern) {
-		case 0: //Chaos Polygon new
-			dp.chaosPolygonNew(options);
-			break;
 		case 5: //Circle Wrap
 			Color c1 = Color.RED;
 			Color c2 = Color.BLUE;
@@ -115,7 +112,7 @@ public class DrawFrame {
 			
 			dp.circleFractal((double)args[0], (double)args[1], (double)args[2], c1, c2);
 			break;
-		case 1: //Chaos Polygon
+		case 0: //Chaos Polygon
 			dp.chaosPolygon(options);
 			break;
 		default:

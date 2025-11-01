@@ -14,10 +14,8 @@ public class LEDGrid extends JPanel {
 	private int horizontalLEDs;
 	private int verticalLEDs;  // Grid size
 	private boolean showIncrement = true;
-	private int increment = 0;
+	private int increment;
 	private boolean isComplete = false;
-	private String titleToDraw = "blank";
-	private boolean drawTitle = false;
 	
 	protected Mark[][] leds;  // An array of arrays of Color. AKA a 2-dimensional field of colors or "LEDs"
     public LEDGrid(Dimension dimension) {
@@ -39,14 +37,6 @@ public class LEDGrid extends JPanel {
     		}
     	}
     	setMinimumSize(dimension);
-    }
-    public void clear() {
-    	int i, j;
-    	for( i = 0; i < horizontalLEDs; i++ ) {
-    		for( j = 0; j < verticalLEDs; j++ ) {
-    			leds[i][j] = new Mark(Color.BLACK);
-    		}
-    	}
     }
     public int getHorizontalLEDs() {
 		return horizontalLEDs;
@@ -96,18 +86,6 @@ public class LEDGrid extends JPanel {
     	g.setColor(Color.WHITE);
     	g.drawString("Done",5,15);
     }
-    public void setDrawTitle(boolean b) {
-    	this.drawTitle = b;
-    }
-    public void setTitleToDraw(String title) {
-    	this.titleToDraw = title;
-    }
-    private void drawTitle(Graphics g) {
-    	g.setColor(Color.BLACK);
-    	g.fillRect(0, 0, 10, 20);
-    	g.setColor(Color.WHITE);
-    	g.drawString(titleToDraw,5,15);
-    }
     @Override
     public void paintComponent(Graphics g)
     {
@@ -125,6 +103,5 @@ public class LEDGrid extends JPanel {
     	}
     	if(showIncrement) drawIncrement(g);
     	if(isComplete) drawComplete(g);
-    	if(drawTitle) drawTitle(g);
     }
 }
