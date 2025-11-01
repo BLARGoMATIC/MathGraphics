@@ -2,6 +2,8 @@ package mathgraphics;
 
 import java.awt.Color;
 
+import com.fasterxml.jackson.annotation.*;
+
 public class Options {
 	
 	/**
@@ -10,10 +12,22 @@ public class Options {
 	 * @param args
 	 */
 	public String name;
+	@JsonIgnore
 	public Color[] colors;
+	
+	/** {
+	 * 	int numSides,			//int for number of sides
+	 * 	iterations,				//int for number
+	 * 	int cMask,				//current vertex Mask
+	 * 	int pMask				//previous vertex Mask
+	 * 	draw the polygon?,		//instruction for LEDGrid to draw the polygon. 1 for yes, 0 for no
+	 * 	}
+	 */ 
+	@JsonProperty("numSides, iterations, cMask, pMask")
 	public int[] args;
 	public boolean equal;
 	public boolean showIncrement;
+	@JsonIgnore
 	public VertexRestrictions[] restrictions;
 	
 	public Options() {
@@ -32,12 +46,34 @@ public class Options {
 		this.showIncrement = showIncrement;
 		this.restrictions = restrictions;
 	}
+	public Options(Color[] colors, int[] args, boolean equal) {
+		this.colors = colors;
+		this.args = args;
+		this.equal = equal;
+	}
+	public Options(Color[] colors, int[] args, boolean equal, boolean showIncrement) {
+		this.colors = colors;
+		this.args = args;
+		this.equal = equal;
+		this.showIncrement = showIncrement;
+	}
 	public Options(Color[] colors, int[] args, boolean equal, boolean showIncrement, VertexRestrictions[] restrictions) {
 		this.colors = colors;
 		this.args = args;
 		this.equal = equal;
 		this.showIncrement = showIncrement;
 		this.restrictions = restrictions;
+	}
+	public Options(String name, int[] args, boolean equal) {
+		this.name = name;
+		this.args = args;
+		this.equal = equal;
+	}
+	public Options(String name, int[] args, boolean equal, boolean showIncrement) {
+		this.name = name;
+		this.args = args;
+		this.equal = equal;
+		this.showIncrement = showIncrement;
 	}
 	public Options(String name, int[] args, boolean equal, VertexRestrictions[] restrictions) {
 		this.name = name;
