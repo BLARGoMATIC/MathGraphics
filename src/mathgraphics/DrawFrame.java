@@ -8,7 +8,7 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-public class DrawFrame { //TODO separate this class from JFrame, as it adds no functionality. All it's doing is handling
+public class DrawFrame {
 	
 	/**
 	 * Integer identifier for pattern to draw: 
@@ -57,7 +57,7 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 	
 	public void draw() {
 		switch(pattern) {
-		case 1: //Chaos Polygon new
+		case 0: //Chaos Polygon new
 			dp.chaosPolygonNew(options);
 			break;
 		case 5: //Circle Wrap
@@ -118,7 +118,7 @@ public class DrawFrame { //TODO separate this class from JFrame, as it adds no f
 			
 			dp.circleFractal((double)args[0], (double)args[1], (double)args[2], c1, c2);
 			break;
-		case 0: //Chaos Polygon
+		case 1: //Chaos Polygon
 			dp.chaosPolygon(options);
 			break;
 		default:

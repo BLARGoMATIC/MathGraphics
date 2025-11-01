@@ -1,13 +1,12 @@
 package mathgraphics;
 
 import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,7 +22,7 @@ import javax.swing.JTextField;
  * @author John
  *
  */
-public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want to?
+public class VertexMaskPanel extends JPanel{ //Can I extend LEDGrid? Do I want to?
 
 	/**
 	 * 
@@ -32,17 +31,22 @@ public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want 
 	
 	private LEDGrid vertexPanel;
 	private List<JRadioButton> vertexButtons;
+	private JPanel fieldPanel;
+	private JLabel maskLabel;
+	private JLabel binaryLabel;
+	private JTextField maskField;
+	private JTextField binaryField;
 	private DrawPatterns dp;
 //	private int numSides;
 	
 	public VertexMaskPanel(int numSides, String title) {
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		vertexPanel = new LEDGrid(new Dimension(300,300));
 		vertexPanel.setPreferredSize(new Dimension(300,300));
 		vertexPanel.setShowIncrement(false);
 		vertexPanel.setTitleToDraw(title);
 		vertexPanel.setDrawTitle(true);
 		vertexPanel.setLayout(null);
-		vertexPanel.setAlignmentY(BOTTOM_ALIGNMENT);
 		dp = new DrawPatterns(vertexPanel, new Options());
 				
 //		this.numSides = numSides;
@@ -69,7 +73,13 @@ public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want 
 		}
 		vertexButtons = new ArrayList<>();
 		for (int i = 0; i < numSides; i++) {
-			vertexButtons.add(new JRadioButton());
+			JRadioButton vertexButton = new JRadioButton();
+			vertexButton.setName("" + i);
+			vertexButton.addActionListener(a -> {
+				updateMaskField();
+//				System.out.println(((JRadioButton) (a.getSource())).getName());
+			});
+			vertexButtons.add(vertexButton);
 		}
 		
 		int k = vertex.length - 1;
@@ -82,9 +92,65 @@ public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want 
 			b.setSelected(true);
 			k++;
 		}
-		dp.addCircle(20, vertex[vertex.length-1].x, vertex[vertex.length-1].y);
+		dp.addCircle(20, vertex[vertex.length-1].x, vertex[vertex.length-1].y);	//Drawing a circle around vertex 0
+		
+		
+		fieldPanel = new JPanel();
+		fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.LINE_AXIS));
+		maskLabel = new JLabel("Mask: ");
+		maskField = new JTextField();
+		maskField.setPreferredSize(new Dimension(60,20));
+		maskField.setMaximumSize(new Dimension(60, 20));
+		maskField.setText(Integer.toString(getMask()));
+		maskField.addActionListener(a -> {
+			
+			try {
+				if(maskField.isFocusOwner() && !maskField.getText().isEmpty()) {
+					setMask(Integer.parseInt(maskField.getText()));
+				}
+			} catch (NumberFormatException e1) {
+				JOptionPane.showMessageDialog(null, "That's not a number.");
+			}	
+		});
+		maskField.addFocusListener(new FocusListener() {	
+			@Override
+			public void focusLost(FocusEvent e) {
+				//nothing
+			}
+			@Override
+			public void focusGained(FocusEvent e) {
+				maskField.selectAll();
+			}
+		});
+
+		binaryLabel = new JLabel("Mask in Binary: ");
+		binaryField = new JTextField();
+		binaryField.setPreferredSize(new Dimension(80,20));
+		binaryField.setMaximumSize(new Dimension(80, 20));
+		binaryField.setText(getMaskBinary());
+		binaryField.addActionListener(a -> {
+			try{
+				if(binaryField.isFocusOwner() && !binaryField.getText().isEmpty()) {
+					setMask(Integer.parseInt(binaryField.getText(), 2));
+				}
+			}	catch (NumberFormatException e1) {
+				JOptionPane.showMessageDialog(null, "Ones and zeroes only bub.");
+			}
+		});
+		
+		fieldPanel.add(Box.createHorizontalGlue());
+		fieldPanel.add(maskLabel);
+		fieldPanel.add(maskField);
+		fieldPanel.add(Box.createRigidArea(new Dimension(10,0)));
+		fieldPanel.add(binaryLabel);
+		fieldPanel.add(binaryField);
+		fieldPanel.add(Box.createHorizontalGlue());
+		
 		
 		add(vertexPanel);
+		add(Box.createRigidArea(new Dimension(0,5)));
+		add(fieldPanel);
+		validate();
 	}
 	
 	/**
@@ -117,32 +183,50 @@ public class VertexMaskPanel extends JPanel { //Can I extend LEDGrid? Do I want 
 		char[] charMask = new char[vertexButtons.size()];
 		int i = 0;
 		for (JRadioButton b : vertexButtons) {			//They're backwards from what I want, as its easier to set the mask the other direction.
-			charMask[i++] = b.isSelected() ? '1' : '0';	//I need all the leading and trailing zeros to remain in place when I reverse. Doing it with math and operands either drops the leading or the tailing zeros.
+			charMask[i++] = b.isSelected() ? '1' : '0';	//I need leading and trailing zeros to also get reversed, converting to chars and just reversing the string seems to be the easiest way to do that.
 		}
 		
 		vertexMask = Integer.parseInt(new StringBuilder(new String(charMask)).reverse().toString(), 2); //reverse!
 		
 		return vertexMask;
 	}
+	public String getMaskBinary() { //Just like getMask(), but this one gives a string instead for display purposes
+		String binaryMask;
+		char[] charMask = new char[vertexButtons.size()];
+		int i = 0;
+		for (JRadioButton b : vertexButtons) {			
+			charMask[i++] = b.isSelected() ? '1' : '0';	
+		}
+		
+		binaryMask = new StringBuilder(new String(charMask)).reverse().toString();
+		return binaryMask;
+	}
 	public void setMask(int mask) {
 		int i = 1;
 		for(JRadioButton b : vertexButtons) {
 			b.setSelected(((mask & i) > 0) ? true : false);
 			i = i << 1;
-//			System.out.print(i + " ");
 		}
-//		System.out.print("\n");
 	}
 	public void setAllButtons(boolean isSelected) {
 		for(JRadioButton b : vertexButtons) {
 			b.setSelected(isSelected);
 		}
 	}
+	public void invertButtons() {
+		for(JRadioButton b : vertexButtons) {
+			b.setSelected((b.isSelected() ? false : true));
+		}
+	}
+	public void updateMaskField() {
+		maskField.setText(Integer.toString(getMask()));
+		binaryField.setText(getMaskBinary());
+	}
 	
 	public void setRestrictions(VertexRestrictions restrictions) {
 		
 	}
-	private int reverse(int i) {	
+	private int reverse(int i) {	//keeping because I might want it later...
 		return Integer.parseInt(new StringBuilder(Integer.toBinaryString(i)).reverse().toString());
 	}
 }

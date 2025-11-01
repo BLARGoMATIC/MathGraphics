@@ -15,6 +15,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+@Deprecated
 public class ChaosPolyOptions extends OptionPanel {
 
 	/**
@@ -24,7 +25,7 @@ public class ChaosPolyOptions extends OptionPanel {
 	
 	private JPanel presetPanel;
 	private JLabel presetLabel;
-	private JComboBox<Presets> presetBox;
+	private JComboBox<Preset> presetBox;
 	private JPanel sidesPanel;
 	private JLabel sidesLabel;
 	private JPanel iterationsPanel;
@@ -55,13 +56,13 @@ public class ChaosPolyOptions extends OptionPanel {
 		presetLabel = new JLabel("Preset: ");
 		presetPanel.setLayout(new BoxLayout(presetPanel, BoxLayout.LINE_AXIS));
 		presetLabel.setAlignmentX(LEFT_ALIGNMENT);
-		presetBox = new JComboBox<>(Presets.values());
+		presetBox = new JComboBox<>(Preset.values());
 		presetBox.setPreferredSize(new Dimension(40,20));
 		presetBox.setSelectedIndex(0);
 		presetPanel.add(presetLabel);
 		presetPanel.add(presetBox);
 		presetBox.addActionListener(e -> 
-			setOptions(((Presets)presetBox.getSelectedItem()).getOptions())
+			setOptions(((Preset)presetBox.getSelectedItem()).getOptions())
 		);
 		
 		//numSides Panel

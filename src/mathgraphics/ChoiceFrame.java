@@ -68,8 +68,8 @@ public class ChoiceFrame {
 		//so I can pull the option values in one line once the draw button is pressed. PolyMorphism is an amazing thing.
 		OptionPanel[] designOptionCollection = {
 				//						new EmptyOptionsPanel(),
-				new ChaosPolyOptions(),
-				new ChaosPolyNewOptions()
+				new ChaosPolyNewOptions(),
+//				new ChaosPolyOptions(),
 				//						new CircleWrapOptions(),
 				//						new TreeOptions(),
 				//						new SquareOptions(),
@@ -87,7 +87,7 @@ public class ChoiceFrame {
 		choiceBox = new JComboBox<>(designOptionCollection); //This is so much easier than xaml
 		designComboBoxPanel.add(choiceBox); //Adding it to the selections Panel,
 		choiceBox.setPreferredSize(new Dimension(200,25));
-		choiceBox.setSelectedIndex(1);
+		choiceBox.setSelectedIndex(0);
 		designOptionsPanel.add((JPanel)choiceBox.getSelectedItem());
 		buttonPanel.setLayout(new BoxLayout(buttonPanel , BoxLayout.X_AXIS));
 		buttonPanel.add(Box.createRigidArea(new Dimension(0,10)));
@@ -127,8 +127,8 @@ public class ChoiceFrame {
 					JOptionPane.showMessageDialog(null, "Numbers Only Please");
 					e2.printStackTrace();
 				} catch (IllegalArgumentException e4) {
-					if (e4.getMessage() == "bound must be positive")
-					JOptionPane.showMessageDialog(null, "That pattern has a dead-end, try another one.");
+//					if (e4.getMessage() == "bound must be positive")
+//						JOptionPane.showMessageDialog(null, "Options are too restrictive, try another one.");
 					e4.printStackTrace();
 				} catch (Exception e3) {
 					e3.printStackTrace();

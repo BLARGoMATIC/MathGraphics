@@ -15,7 +15,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		this.grid = grid;
 		this.options = options;
 	}
-	public Mark at(Coordinates c) { //similar to addPoint() however this one uses a Modulus window wrapping function to keep the point within the grid
+	public Mark at(Coordinates c) {
 		return grid.leds[c.x][c.y];
 	}
 	public void addPoint(Coordinates a) {
@@ -323,7 +323,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		boolean andOperator = options.equal;
 		Coordinates[] vertex = new Coordinates[numSides];
 		Coordinates pencil = new Coordinates(grid.getHorizontalLEDs()/2, grid.getHorizontalLEDs()/2);
-//		Coordinates chosenVert;
 		
 		//		*************** Math for a regular pentagon ******************
 		//Adjusting the rotational offset of the polygon so it's symmetrical along the vertical axis
@@ -367,7 +366,6 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		int[] rotatedCurrentMask = new int[numSides];
 		int[] rotatedPreviousMask = new int[numSides];
 		{	//Code block cause I like using the variable i
-//			int j = 0;
 			for(int i = 0; i < rotatedCurrentMask.length; i++) {			//cycle through all vertices and rotate the mask to be use later
 				rotatedCurrentMask[i] = leftRotate(numSides, currentMask, i);
 				rotatedPreviousMask[i] = leftRotate(numSides, previousMask, i);
@@ -379,9 +377,10 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		System.out.println("currentMask: "+ currentMask + " - " + Integer.toBinaryString(currentMask) + " PreviousMask: " + previousMask + " - " + Integer.toBinaryString(previousMask));
 		
-		
-		List<ArrayList<ArrayList<Integer>>> modListMatrix = new ArrayList<>(); //using an arraylist here because its dynamic and we don't yet know how many valid vertices there will be.
-//		int[][][] modMatrix;
+		//using an arraylist here because its dynamic and we don't yet know how many valid vertices there will be.
+		//There's two different for loops so you only have to check the boolean andOperator once when looping through the whole thing as opposed to (number of Sides)^3 times.
+		//Its also scaleable and I could potentially add more operators like XOR and NOT into the mix.
+		List<ArrayList<ArrayList<Integer>>> modListMatrix = new ArrayList<>(); 
 		if(andOperator) {
 			for(int i = 0; i < numSides; i++) {
 
@@ -412,10 +411,8 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				}
 			}
 		}
-		int[][][] modMatrix = modListMatrix.stream().map(u1 -> u1.stream().map(u2 -> u2.stream().mapToInt(i->i).toArray() ).toArray(int[][]::new)).toArray(int[][][]::new);
-		
-//		String[][][] stringArray = mainList.stream().map(u1 -> u1.stream().map(u2 -> u2.toArray(new String[0])).toArray(String[][]::new)).toArray(String[][][]::new));
-		
+		//Casting into standard arrays for the nice syntax and lower overhead, we are goingg to be flipping through it several million times, so a difference in a few nano or microseconds could save a couple seconds.
+		int[][][] modMatrix = modListMatrix.stream().map(u1 -> u1.stream().map(u2 -> u2.stream().mapToInt(i->i).toArray() ).toArray(int[][]::new)).toArray(int[][][]::new); //lambda magic
 		
 		System.out.println("\nMod Matrix:");
 		for(int i = 0; i < numSides; i++) {
@@ -428,30 +425,30 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			System.out.print("\n");
 		}
 		
-		
 		int v0 = 0;
 		int v1 = 0;
 		int v2 = 0;
 		//Selecting a random point
-		pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
-		pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
+//		pencil.x = rand.nextInt((3*grid.getHorizontalLEDs()/numSides)+1) + (1*grid.getHorizontalLEDs()/numSides);
+//		pencil.y = rand.nextInt((3*grid.getVerticalLEDs()/numSides)+1) + (1*grid.getVerticalLEDs()/numSides);
+		pencil.x = grid.getHorizontalLEDs()/2;
+		pencil.y = grid.getVerticalLEDs()/2;
 		
 		for (int j = 0; j < iterations; j++) {
 			grid.setIncrement((int)((float)j/(float)iterations * 100)); //percentage done
 			
-//			v1 = Math.floorMod(((restrictedVertices[rand.nextInt(restrictedVertices.length)]) + v0), numSides); // OLD
-			/*
+			/*Selecting a 'random' vertex.
+			 * 'random' because the choices are limited and set by everything above
 			 *current Vertex = int[lastVertex][currentVertex] + lastVertex mod numSides 
 			 *were current vertex is randomized. All the setup above was to make the random picking
 			 *very limited so we only have to pick one random number for each point,
 			 *instead of picking a point, then checking if its valid, then picking a different one if not, repeat ad naseum
-			 */
-			
-			v0 = Math.floorMod(modMatrix[v2][v1][rand.nextInt(modMatrix[v2][v1].length)] + 0, numSides); //TODO this is giving me a headache
+			 */	
+			v0 = modMatrix[v2][v1][rand.nextInt(modMatrix[v2][v1].length)] % numSides; //using floorMod instead of the % operator
 			
 			//moving halfway to that vertex
-			pencil.x = (vertex[v0].x + pencil.x)/2; // add argument to change distance to next vertex
-			pencil.y = (vertex[v0].y + pencil.y)/2;
+			pencil.x = ((vertex[v0].x + pencil.x)/2);
+			pencil.y = ((vertex[v0].y + pencil.y)/2);
 			
 			v2 = v1;
 			v1 = v0;
@@ -489,7 +486,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 							pencil.mark.getAlpha(),
 							at(pencil).getTimesPicked() + 1);
 				}
-				else pencil.mark = new Mark(at(pencil).brighter(),
+				else pencil.mark = new Mark(at(pencil).brighter(),	//Might be a better way to get colors to transition smoothly, but for now this is good enough.
 						at(pencil).getTimesPicked() + 1);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
@@ -509,6 +506,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	 * @param numSides Number n of sides for the n-gon to draw. ex. 3 is a triangle, 4 is a square, etc.
 	 * @param restrictions
 	 */
+	@Deprecated
 	public void chaosPolygon(Options options) {
 		int numSides = options.args[0];
 //		int iterations = options.args[1];
@@ -557,13 +555,13 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			e.printStackTrace();
 		}
 	}
-	
 	/** Returns true if the supplied vertex passes all tests supplied by the supplied VertexRestrictions, returns false otherwise.
 	 * @param vertex0 The Current Vertex (index) that must be checked against the chosen vertex restrictions
 	 * @param vertex1 The Previous Vertex (index) or the vertex to check against vertex0 (The Vertex Buffer)
 	 * @param numSides number of Sides of the current polygon, for use in modulus functions for adjacency and offset
 	 * @param restrictions A collection of restrictions for determining the rules for selecting a new vertex.
 	 */
+	@Deprecated
 	public boolean vertexValidation(int vertex0, int vertex1, int numSides, VertexRestrictions restrictions) {
 		if (restrictions.isEquivalencePreference()) { //
 			if (restrictions.isEquivalenceTrue()) {
@@ -624,6 +622,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 	public boolean onRight(Coordinates a, Coordinates b, Coordinates pencil) {
 		return ((b.x - a.x)*(pencil.y - a.y)-(pencil.x - a.x)*(b.y - a.y) < 0);
 	}
+	@Deprecated
 	private class PlotPoints extends Thread {
 		
 		private int numberOfTasks;
@@ -712,7 +711,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 								pencil.mark.getAlpha(),
 								at(pencil).getTimesPicked() + 1);
 					}
-					else pencil.mark = new Mark(at(pencil).brighter(),
+					else pencil.mark = new Mark(at(pencil).brighter(),	
 							at(pencil).getTimesPicked() + 1);
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
@@ -727,7 +726,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			grid.repaint();
 		}
 	}
-	public void dispose() {
+	public void dispose() {	//Used with PlotPoints. probably dont need it, but I should look into how it works with ChaosPolygonNew
 		shouldQuit = true;
 	}
 }
