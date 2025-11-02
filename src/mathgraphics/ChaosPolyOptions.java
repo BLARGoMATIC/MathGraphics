@@ -13,9 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
-@Deprecated
 public class ChaosPolyOptions extends OptionPanel {
 
 	/**
@@ -25,7 +23,7 @@ public class ChaosPolyOptions extends OptionPanel {
 	
 	private JPanel presetPanel;
 	private JLabel presetLabel;
-	private JComboBox<Preset> presetBox;
+	private JComboBox<Presets> presetBox;
 	private JPanel sidesPanel;
 	private JLabel sidesLabel;
 	private JPanel iterationsPanel;
@@ -53,16 +51,16 @@ public class ChaosPolyOptions extends OptionPanel {
 		
 		//preset Panel
 		presetPanel = new JPanel();
-		presetLabel = new JLabel("Preset: ");
+		presetLabel = new JLabel("Preset:");
 		presetPanel.setLayout(new BoxLayout(presetPanel, BoxLayout.LINE_AXIS));
 		presetLabel.setAlignmentX(LEFT_ALIGNMENT);
-		presetBox = new JComboBox<>(Preset.values());
-		presetBox.setPreferredSize(new Dimension(40,20));
+		presetBox = new JComboBox<>(Presets.values());
+		presetBox.setPreferredSize(new Dimension(50,20));
 		presetBox.setSelectedIndex(0);
 		presetPanel.add(presetLabel);
 		presetPanel.add(presetBox);
 		presetBox.addActionListener(e -> 
-			setOptions(((Preset)presetBox.getSelectedItem()).getOptions())
+			setOptions(((Presets)presetBox.getSelectedItem()).getOptions())
 		);
 		
 		//numSides Panel
@@ -75,7 +73,6 @@ public class ChaosPolyOptions extends OptionPanel {
 		sidesField.setPreferredSize(new Dimension(30,20));
 		sidesField.setMaximumSize(new Dimension(30, 20));
 		sidesField.setText("5");
-		sidesField.setHorizontalAlignment(SwingConstants.RIGHT);
 		sidesPanel.add(sidesLabel);
 		Dimension minSize = new Dimension(20, 20);
 		Dimension prefSize = new Dimension(20, 20);
@@ -107,7 +104,6 @@ public class ChaosPolyOptions extends OptionPanel {
 		iterationsField.setPreferredSize(new Dimension(78,20));
 		iterationsField.setMaximumSize(new Dimension(140, 20));
 		iterationsField.setText("10000000");
-		iterationsField.setHorizontalAlignment(SwingConstants.RIGHT);
 		iterationsPanel.add(iterationsLabel);
 //		minSize = new Dimension(20, 20);
 //		prefSize = new Dimension(20, 20);
@@ -143,11 +139,8 @@ public class ChaosPolyOptions extends OptionPanel {
 		warmColorBox.setSelectedIndex(0);
 		hotColorBox.setSelectedIndex(5);
 		coldLabel = new JLabel("Cold Color");
-		coldLabel.setToolTipText("The Color that pixels start out as when they're plotted for the first time.");
 		warmLabel = new JLabel("Warm Color");
-		warmLabel.setToolTipText("The Color that a pixel transitions to as it gets plotted more often.");
 		hotLabel = new JLabel("Hot Color");
-		hotLabel.setToolTipText("The Color that pixels will eventually become when plotted many times.");
 		cLabelPanel.add(coldLabel);
 		cLabelPanel.add(Box.createRigidArea(new Dimension(0,5)));
 		cLabelPanel.add(warmLabel);
@@ -167,8 +160,8 @@ public class ChaosPolyOptions extends OptionPanel {
 		
 		equalPanel = new JPanel();
 		equalPanel.setLayout(new BoxLayout(equalPanel, BoxLayout.LINE_AXIS));
-		andButton = new JRadioButton("Or");
-		orButton = new JRadioButton("And");
+		andButton = new JRadioButton("And");
+		orButton = new JRadioButton("Or");
 		orButton.setSelected(true);
 		equalBGroup = new ButtonGroup();
 		equalBGroup.add(andButton);
