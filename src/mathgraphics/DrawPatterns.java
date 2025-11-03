@@ -360,13 +360,17 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		 * hexagon - 6 sides with all vertices would look like
 		 * 					0 1 2 3 4 5
 		 * with restriction mask 1 0 1 0 1 1 it would be
-		 * 					0   2  4  5
+		 * 					0 _ 2 _ 4 5
 		 * which will then be turned into the array{0, 2, 4, 5}
+		 * 
+		 * We start with just an array of ints, since that's how the masks are stored
+		 * For instance the mask of 1 1 0 1 1 is stored as 27. This is nice since it effectively allows us to make a 2d array with just one array.
+		 * 
 		 */
 		int[] rotatedCurrentMask = new int[numSides];
 		int[] rotatedPreviousMask = new int[numSides];
 		{	//Code block cause I like using the variable i
-			for(int i = 0; i < rotatedCurrentMask.length; i++) {			//cycle through all vertices and rotate the mask to be use later
+			for(int i = 0; i < rotatedCurrentMask.length; i++) {			//cycle through all vertices and rotate the mask to be used later
 				rotatedCurrentMask[i] = leftRotate(numSides, currentMask, i);
 				rotatedPreviousMask[i] = leftRotate(numSides, previousMask, i);
 			}
@@ -377,9 +381,64 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		}
 		System.out.println("currentMask: "+ currentMask + " - " + Integer.toBinaryString(currentMask) + " PreviousMask: " + previousMask + " - " + Integer.toBinaryString(previousMask));
 		
-		//using an arraylist here because its dynamic and we don't yet know how many valid vertices there will be.
-		//There's two different for loops so you only have to check the boolean andOperator once when looping through the whole thing as opposed to (number of Sides)^3 times.
-		//Its also scaleable and I could potentially add more operators like XOR and NOT into the mix.
+		/*
+		 * What we're doing here is making a 3d array to store what vertices are
+		 * 'allowed' to be chosen.
+		 * 
+		 * This is what the masks look like:
+		 * rotatedMasks:              VertexMasks:
+			11110 = 30                  00001 = 1
+			11101 = 29                  00010 = 2
+			11011 = 27                  00100 = 4
+			10111 = 23                  01000 = 8
+			01111 = 15                  10000 = 16
+		 * 
+		 * We rotate the mask since adjacency is relative and because of the existence of the previous mask. The list of valid vertices will most likely change
+		 * For instance we may want to not choose an adjacent vertex or adjacent to the previous one. 
+		 * But We'll need to translate which vertex we mean into absolute terms at some point, so we do it here.
+		 * The vertex mask is pretty much just pointing at what our last chosen vertex was which is relevant for our next choice.
+		 * 
+		 * Essentially we're making a big map of all the possible choices that are allowed to be made based on the chosen vertex.
+		 * This matrix gives a list of allowed choices based on where you were previously.
+		 * The x-axis is the most recently chosen vertex
+		 * The y-axis the vertex chosen before last.
+		 * The list in the middle gives the vertex ids of which choices are allowed.
+		 * 
+			Mod Matrix:
+			Vertex 		0			1			 2			  3			   4
+				0	1 2 3 4 -    0 2 3 4 -    0 1 3 4 -    0 1 2 4 -    0 1 2 3 -    
+				1	1 2 3 4 -    0 2 3 4 -    0 1 3 4 -    0 1 2 4 -    0 1 2 3 -    
+				2	1 2 3 4 -    0 2 3 4 -    0 1 3 4 -    0 1 2 4 -    0 1 2 3 -    
+				3	1 2 3 4 -    0 2 3 4 -    0 1 3 4 -    0 1 2 4 -    0 1 2 3 -    
+				4	1 2 3 4 -    0 2 3 4 -    0 1 3 4 -    0 1 2 4 -    0 1 2 3 - 
+		 * 
+		 * This is a map for a "no consecutive vertices" restriction meaning you can't choose the same vertex twice in a row. Vertex 0 cannot choose vertex 0 again.
+		 * Note how its the same for the entire y-axis which means the vertex before last has no bearing on the decision.
+		 * 
+		 * This is a different, more restricted set:
+		 * rotatedMasks:              VertexMasks:
+			10101 = 21                      00001 = 1
+			01011 = 11                      00010 = 2
+			10110 = 22                      00100 = 4
+			01101 = 13                      01000 = 8
+			11010 = 26                      10000 = 16
+			currentMask: 21 - 10101 PreviousMask: 30 - 11110
+			
+			Mod Matrix:
+			2 4 - - -    1 3 - - -    1 2 4 - -    2 3 - - -    1 3 4 - -    
+			0 2 4 - -    0 3 - - -    2 4 - - -    0 2 3 - -    3 4 - - -    
+			0 4 - - -    0 1 3 - -    1 4 - - -    0 3 - - -    1 3 4 - -    
+			0 2 4 - -    0 1 - - -    1 2 4 - -    0 2 - - -    1 4 - - -    
+			0 2 - - -    0 1 3 - -    1 2 - - -    0 2 3 - -    1 3 - - - 
+		 * Sometimes the amount of choices changes just due to the different combinations of vertex choices.
+		 * If the restrictions cause an empty set its too restrictive and it causes a dead end.
+		 * 
+		 * using an arraylist here because its dynamic and we don't yet know how many
+		 * valid vertices there will be. There's two different for loops so you only
+		 * have to check the boolean andOperator once when looping through the whole
+		 * thing as opposed to (number of Sides)^3 times. 
+		 * Its also scaleable and I could potentially add more operators like XOR and NOT into the mix.
+		 */
 		List<ArrayList<ArrayList<Integer>>> modListMatrix = new ArrayList<>(); 
 		if(andOperator) {
 			for(int i = 0; i < numSides; i++) {
@@ -411,7 +470,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 				}
 			}
 		}
-		//Casting into standard arrays for the nice syntax and lower overhead, we are goingg to be flipping through it several million times, so a difference in a few nano or microseconds could save a couple seconds.
+		//Casting into standard arrays for the nice syntax and lower overhead, we are going to be flipping through it several million times, so a difference in a few nano or microseconds could save a couple seconds.
 		int[][][] modMatrix = modListMatrix.stream().map(u1 -> u1.stream().map(u2 -> u2.stream().mapToInt(i->i).toArray() ).toArray(int[][]::new)).toArray(int[][][]::new); //lambda magic
 		
 		System.out.println("\nMod Matrix:");
@@ -439,7 +498,7 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 			
 			/*Selecting a 'random' vertex.
 			 * 'random' because the choices are limited and set by everything above
-			 *current Vertex = int[lastVertex][currentVertex] + lastVertex mod numSides 
+			 *current Vertex = int[lastVertex][currentVertex] + lastVertex modulo numSides 
 			 *were current vertex is randomized. All the setup above was to make the random picking
 			 *very limited so we only have to pick one random number for each point,
 			 *instead of picking a point, then checking if its valid, then picking a different one if not, repeat ad naseum
@@ -627,9 +686,11 @@ public class DrawPatterns { //TODO clean up methods, it's kind of messy at the m
 		
 		private int numberOfTasks;
 		private Coordinates[] vertex;
+		private int id;
 		public PlotPoints(int numberOfTasks, Coordinates[] vertex, int id) {
 			this.numberOfTasks = numberOfTasks;
 			this.vertex = vertex;
+			this.id = id;
 		}
 
 		@Override
