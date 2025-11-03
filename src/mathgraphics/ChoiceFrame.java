@@ -68,7 +68,8 @@ public class ChoiceFrame {
 		//so I can pull the option values in one line once the draw button is pressed. PolyMorphism is an amazing thing.
 		OptionPanel[] designOptionCollection = {
 				//						new EmptyOptionsPanel(),
-				new ChaosPolyOptions(),
+				new ChaosPolyNewOptions(),
+//				new ChaosPolyOptions(),
 				//						new CircleWrapOptions(),
 				//						new TreeOptions(),
 				//						new SquareOptions(),
@@ -111,6 +112,7 @@ public class ChoiceFrame {
 				if (drawFrame != null) drawFrame.dispose();
 				try {
 					drawFrame = new DrawFrame(((OptionPanel)choiceBox.getSelectedItem()).getOptions());
+					drawFrame.pattern = choiceBox.getSelectedIndex();
 					Thread t = new Thread() { //This somehow allows the design 'animation' to begin right when the frame opens, as opposed to having a white box for a little bit
 						@Override
 						public void run() {  //TODO find a way to kill this thread, or stop the drawing once the frame has been closed in order to prevent unnecessary cpu usage. Don't want to draw a picture we can't see!
@@ -124,6 +126,10 @@ public class ChoiceFrame {
 				} catch (NumberFormatException e2) {
 					JOptionPane.showMessageDialog(null, "Numbers Only Please");
 					e2.printStackTrace();
+				} catch (IllegalArgumentException e4) {
+//					if (e4.getMessage() == "bound must be positive")
+//						JOptionPane.showMessageDialog(null, "Options are too restrictive, try another one.");
+					e4.printStackTrace();
 				} catch (Exception e3) {
 					e3.printStackTrace();
 				}
