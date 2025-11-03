@@ -4,10 +4,16 @@ https://en.wikipedia.org/wiki/Chaos_game
 
 1. Take a given shape (Just regular polygons in this case).  
 2. Plot a Random point  
-3. Pick a random vertex (with restrictions)  
+3. Pick a random vertex (Following chosen restrictions)  
 4. Go halfway to that vertex and plot a point  
 5. Repeat steps 3-4 1000000 times  
 6. Get pretty fractal  
+
+# Build Dependencies
+Jackson https://github.com/FasterXML/jackson
+(used for preset saving/loading).
+
+Maven pom.xml is included, you can just use that.
 
 # Vertex Restrictions
 No Prefence - Pure random  
@@ -39,6 +45,5 @@ Red -> Orange -> Yellow, ~15000000 iterations
 Red -> Orange -> Yellow, 15000000 iterations    
 
 and many more...  
-another tip: in dealing with lots of false values, 'and' works like 'or' and vice-versa.
 
-Future plans include arbitrary attractors
+I'm interested in making this in geogebra, so it's much more shareable. However implementing the vertex restrictions seems difficult as it's mostly a calculator not a programing language.
